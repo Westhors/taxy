@@ -34,9 +34,22 @@ Route::post('/admin/login', [AdminController::class, 'login']);
 
 ////////////////////////////////////////// driver ////////////////////////////////
 
- Route::post('driver/login', [DriverController::class, 'login']);
- Route::post('driver/register', [DriverController::class, 'register']);
- Route::post('driver/verify-email', [DriverController::class, 'verifyEmail']);
- Route::post('driver/check-verification-code', [DriverController::class, 'checkVerificationCode']);
+Route::post('driver/login', [DriverController::class, 'login']);
+Route::post('driver/register', [DriverController::class, 'register']);
+Route::post('driver/verify-email', [DriverController::class, 'verifyEmail']);
+Route::post('driver/check-verification-code', [DriverController::class, 'checkVerificationCode']);
 
 ////////////////////////////////////////// driver ////////////////////////////////
+
+
+////////////////////////////////////////// users ////////////////////////////////
+Route::prefix('user')->group(function () {
+    Route::post('register', [UserController::class, 'register']);
+    Route::post('login', [UserController::class, 'login']);
+    Route::post('send-email-otp', [UserController::class, 'sendEmailOtp']);
+    Route::post('verify-email-otp', [UserController::class, 'verifyEmailOtp']);
+    Route::post('send-phone-otp', [UserController::class, 'sendPhoneOtp']);
+    Route::post('verify-phone-otp', [UserController::class, 'verifyPhoneOtp']);
+    Route::post('set-password', [UserController::class, 'setPassword']);
+});
+////////////////////////////////////////// users ////////////////////////////////

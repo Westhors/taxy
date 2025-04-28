@@ -3,31 +3,141 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\JsonResponse;
-use App\Http\Requests\UserRequest;
-use App\Http\Resources\CountryResource;
+use App\Http\Requests\Users\Auth\LoginRequest;
+use App\Http\Requests\Users\Auth\RegisterRequest;
+use App\Http\Requests\Users\Auth\SetPasswordRequest;
 use App\Http\Resources\UserResource;
-use App\Interfaces\CountryRepositoryInterface;
 use App\Interfaces\UserRepositoryInterface;
-use App\Mail\ResetPasswordUserMail;
-use App\Models\Country;
 use App\Models\User;
-use App\Models\WalletTransaction;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Traits\HttpResponses;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class UserController extends  BaseController
 {
-    protected mixed $crudRepository;
+    use HttpResponses;
+    protected mixed $userRepository;
 
     public function __construct(UserRepositoryInterface $pattern)
     {
-        $this->crudRepository = $pattern;
+        $this->userRepository = $pattern;
     }
 
+    public function register(RegisterRequest $request)
+    {
+        $validated = $request->validated();
+
+        try {
+            $user = $this->userRepository->createUser($validated);
+
+            return $this->success(new UserResource($user), 'User registered successfully');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    public function login(LoginRequest $request)
+    {
+        try {
+            $user = $this->userRepository->login($request->email_or_phone, $request->password);
+
+            if ($user) {
+                $token = $user->createToken('user-api-token', ['user'])->plainTextToken;
+
+                return $this->success([
+                    'user' => new UserResource($user),
+                    'token' => $token,
+                ], 'Login successful');
+            }
+
+            // Return error response if login fails
+            return $this->error('Invalid credentials', 401);
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    // Send OTP to the user's email
+    public function sendEmailOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        try {
+            $otp = $this->userRepository->generateEmailOtp($request->email);
+
+            return $this->success(null, 'OTP sent to email');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    public function verifyEmailOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'otp' => 'required|digits:5',
+        ]);
+
+        try {
+            $isValidOtp = $this->userRepository->verifyEmailOtp($request->email, $request->otp);
+
+            if ($isValidOtp) {
+                return $this->success(null, 'Email verified successfully');
+            }
+
+            return $this->error('Invalid or expired OTP', 400);
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    // Send OTP to the user's phone
+    public function sendPhoneOtp(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|phone|exists:users,phone',
+        ]);
+
+        try {
+            $otp = $this->userRepository->generatePhoneOtp($request->phone);
+
+            return $this->success(null, 'OTP sent to phone');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    public function verifyPhoneOtp(Request $request)
+    {
+        $request->validate([
+            // TODO: edit
+            'phone' => 'required|exists:users,phone',
+            'otp' => 'required|digits:5',
+        ]);
+
+        try {
+            $isValidOtp = $this->userRepository->verifyPhoneOtp($request->phone, $request->otp);
+
+            if ($isValidOtp) {
+                return $this->success(null, 'Phone verified successfully');
+            }
+
+            return $this->error('Invalid or expired OTP', 400);
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    public function setPassword(SetPasswordRequest $request)
+    {
+        $user = $this->userRepository->setPassword($request->validated());
+
+        if (!$user) {
+            return $this->error("Error Occured", 422);
+        }
+
+        return $this->success(new UserResource($user), 'Password set successfully.');
+    }
 }

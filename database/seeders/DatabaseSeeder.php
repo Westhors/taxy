@@ -13,12 +13,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(CitySeeder::class);
+        $this->call(DistrictSeeder::class);
         $this->call(AdminSeeder::class);
         $this->call(DriverSeeder::class);
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $this->call(UserSeeder::class);
     }
 }
