@@ -129,13 +129,10 @@ class UserRepository extends CrudRepository implements UserRepositoryInterface
 
         $user = User::where('email', $email)->first();
 
-        if (!$user) {
+        if (!$user || $user->password) {
             return null;
         }
 
-        if ($user->password) {
-            return null;
-        }
         $user->password = Hash::make($newPassword);
         $user->save();
 
@@ -170,5 +167,46 @@ class UserRepository extends CrudRepository implements UserRepositoryInterface
         }
 
         return false;
+    }
+
+    public function findByEmailOrPhone(string $emailOrPhone): ?User
+    {
+        return User::where('email', $emailOrPhone)
+            ->orWhere('phone', $emailOrPhone)
+            ->first();
+    }
+
+    public function sendOtpEmailOrPhone(string $emailOrPhone): string
+    {
+        if (filter_var($emailOrPhone, FILTER_VALIDATE_EMAIL)) {
+            // Send by Email
+            return $this->generateEmailOtp($emailOrPhone);
+        } else {
+            // Send by Phone
+            return  $this->generatePhoneOtp($emailOrPhone);
+        }
+    }
+
+    public function verifyEmailOrPhoneOtp(string $emailOrPhone, string $otp): bool
+    {
+        $field = filter_var($emailOrPhone, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+
+        return UserOtp::where($field, $emailOrPhone)
+            ->where('otp', $otp)
+            ->where('created_at', '>=', now()->subMinutes(10))
+            ->exists();
+    }
+
+    public function updatePassword(User $user, string $emailOrPhone, string $newPassword): bool
+    {
+        $user->forceFill([
+            'password' => Hash::make($newPassword),
+        ])->save();
+
+        $field = filter_var($emailOrPhone, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+
+        UserOtp::where($field, $emailOrPhone)->delete();
+
+        return true;
     }
 }

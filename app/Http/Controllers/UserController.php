@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\JsonResponse;
+use App\Http\Requests\Users\Auth\CheckEmailOrPhoneRequest;
 use App\Http\Requests\Users\Auth\CompleteProfileRequest;
 use App\Http\Requests\Users\Auth\LoginRequest;
 use App\Http\Requests\Users\Auth\RegisterRequest;
 use App\Http\Requests\Users\Auth\SendEmailOTPRequest;
 use App\Http\Requests\Users\Auth\SendPhoneOTPRequest;
+use App\Http\Requests\Users\Auth\SetNewPasswordRequest;
 use App\Http\Requests\Users\Auth\SetPasswordRequest;
 use App\Http\Requests\Users\Auth\VerifyEmailOTPRequest;
+use App\Http\Requests\Users\Auth\VerifyOTPEmailOrPhoneRequest;
 use App\Http\Requests\Users\Auth\VerifyPhoneOTPRequest;
 use App\Http\Resources\UserResource;
 use App\Interfaces\UserRepositoryInterface;
@@ -121,11 +124,15 @@ class UserController extends  BaseController
         try {
             $user = $this->userRepository->setPassword($request->validated());
 
-            if (!$user) {
-                return $this->error("Password can't set", 422);
-            }
+            if ($user) {
+                $token = $user->createToken('user-api-token', ['user'])->plainTextToken;
 
-            return $this->success(new UserResource($user), 'Password set successfully.');
+                return $this->success([
+                    'user' => new UserResource($user),
+                    'token' => $token,
+                ], 'Password set successfully.');
+            }
+            return $this->error("Password can't set", 422);
         } catch (Exception $e) {
             return JsonResponse::respondError($e->getMessage());
         }
@@ -160,6 +167,58 @@ class UserController extends  BaseController
             } else {
                 return $this->error(null, 'User is not authenticated');
             }
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    //? Forget password steps
+    public function forgotPassword(CheckEmailOrPhoneRequest $request)
+    {
+        try {
+            $user = $this->userRepository->findByEmailOrPhone($request->email_or_phone);
+
+            if (!$user) {
+                return $this->error(null, 'User is not authenticated');
+            }
+
+            $otp = $this->userRepository->sendOtpEmailOrPhone($request->email_or_phone);
+
+            return $this->success(
+                null,
+                'OTP sent to your ' . (filter_var($request->email_or_phone, FILTER_VALIDATE_EMAIL) ? 'Email' : 'Phone')
+            );
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    public function verifyEmailOrPhoneOtp(VerifyOTPEmailOrPhoneRequest $request)
+    {
+        try {
+            $user = $this->userRepository->findByEmailOrPhone($request->email_or_phone);
+
+            if (!$user || !$this->userRepository->verifyEmailOrPhoneOtp($request->email_or_phone, $request->otp)) {
+                return $this->error(null, 'Invalid OTP or expired');
+            }
+            return $this->success(null, 'OTP verified successfully');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    public function setNewPassword(SetNewPasswordRequest $request)
+    {
+        try {
+            $user = $this->userRepository->findByEmailOrPhone($request->email_or_phone);
+
+            if (!$user || !$this->userRepository->verifyEmailOrPhoneOtp($request->email_or_phone, $request->otp)) {
+                return $this->error(null, 'Invalid OTP or expired');
+            }
+
+            // Update password
+            $this->userRepository->updatePassword($user, $request->email_or_phone, $request->new_password);
+            return $this->success(null, 'Password updated successfully');
         } catch (Exception $e) {
             return JsonResponse::respondError($e->getMessage());
         }

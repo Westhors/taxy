@@ -51,6 +51,10 @@ Route::prefix('user')->group(function () {
     Route::post('send-phone-otp', [UserController::class, 'sendPhoneOtp']);
     Route::post('verify-phone-otp', [UserController::class, 'verifyPhoneOtp']);
     Route::post('set-password', [UserController::class, 'setPassword']);
+    // Forget password
+    Route::post('forgot-password', [UserController::class, 'forgotPassword']);   // Step 1
+    Route::post('forgot-verify-otp', [UserController::class, 'verifyEmailOrPhoneOtp']); // Step 2
+    Route::post('set-new-password', [UserController::class, 'setNewPassword']);  // Step 3
 
     Route::middleware(['auth:user'])->group(function () {
         Route::get('check-auth', [UserController::class, 'checkAuth']);

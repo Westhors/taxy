@@ -24,4 +24,12 @@ interface UserRepositoryInterface extends ICrudRepository
     public function completeProfile(array $data): User;
 
     public function logout(): bool;
+
+    public function findByEmailOrPhone(string $emailOrPhone): ?User;
+
+    public function sendOtpEmailOrPhone(string $emailOrPhone): string;
+
+    public function verifyEmailOrPhoneOtp(string $emailOrPhone, string $otp): bool;
+
+    public function updatePassword(User $user, string $emailOrPhone, string $newPassword): bool;
 }
