@@ -44,8 +44,8 @@ Route::post('driver/check-verification-code', [DriverController::class, 'checkVe
 
 ////////////////////////////////////////// users ////////////////////////////////
 Route::prefix('user')->group(function () {
-    Route::post('register', [UserController::class, 'register']);
-    Route::post('login', [UserController::class, 'login']);
+    Route::post('register', [UserController::class, 'register'])->middleware('throttle:5,1');
+    Route::post('login', [UserController::class, 'login'])->middleware('throttle:5,1');
     Route::post('send-email-otp', [UserController::class, 'sendEmailOtp']);
     Route::post('verify-email-otp', [UserController::class, 'verifyEmailOtp']);
     Route::post('send-phone-otp', [UserController::class, 'sendPhoneOtp']);

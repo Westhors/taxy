@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use App\Helpers\JsonResponse;
 use App\Http\Requests\Users\Auth\LoginRequest;
 use App\Http\Requests\Users\Auth\RegisterRequest;
+use App\Http\Requests\Users\Auth\SendEmailOTPRequest;
+use App\Http\Requests\Users\Auth\SendPhoneOTPRequest;
 use App\Http\Requests\Users\Auth\SetPasswordRequest;
+use App\Http\Requests\Users\Auth\VerifyEmailOTPRequest;
+use App\Http\Requests\Users\Auth\VerifyPhoneOTPRequest;
 use App\Http\Resources\UserResource;
 use App\Interfaces\UserRepositoryInterface;
 use App\Models\User;
@@ -58,12 +62,8 @@ class UserController extends  BaseController
     }
 
     // Send OTP to the user's email
-    public function sendEmailOtp(Request $request)
+    public function sendEmailOtp(SendEmailOTPRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email|exists:users,email',
-        ]);
-
         try {
             $otp = $this->userRepository->generateEmailOtp($request->email);
 
@@ -73,13 +73,8 @@ class UserController extends  BaseController
         }
     }
 
-    public function verifyEmailOtp(Request $request)
+    public function verifyEmailOtp(VerifyEmailOTPRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email|exists:users,email',
-            'otp' => 'required|digits:5',
-        ]);
-
         try {
             $isValidOtp = $this->userRepository->verifyEmailOtp($request->email, $request->otp);
 
@@ -94,12 +89,8 @@ class UserController extends  BaseController
     }
 
     // Send OTP to the user's phone
-    public function sendPhoneOtp(Request $request)
+    public function sendPhoneOtp(SendPhoneOTPRequest $request)
     {
-        $request->validate([
-            'phone' => 'required|phone|exists:users,phone',
-        ]);
-
         try {
             $otp = $this->userRepository->generatePhoneOtp($request->phone);
 
@@ -109,14 +100,8 @@ class UserController extends  BaseController
         }
     }
 
-    public function verifyPhoneOtp(Request $request)
+    public function verifyPhoneOtp(VerifyPhoneOTPRequest $request)
     {
-        $request->validate([
-            // TODO: edit
-            'phone' => 'required|exists:users,phone',
-            'otp' => 'required|digits:5',
-        ]);
-
         try {
             $isValidOtp = $this->userRepository->verifyPhoneOtp($request->phone, $request->otp);
 
