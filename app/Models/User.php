@@ -54,4 +54,13 @@ class User extends Authenticatable
     {
         return LogOptions::defaults()->logOnly(['*'])->logOnlyDirty();
     }
+
+    public function getAvatarAttribute($value)
+    {
+        if ($value) {
+            return asset('storage/' . $value);
+        }
+
+        return null;
+    }
 }

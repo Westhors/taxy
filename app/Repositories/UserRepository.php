@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Mail\VerifyOtpMail;
 use App\Models\UserOtp;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserRepository extends CrudRepository implements UserRepositoryInterface
@@ -137,6 +138,20 @@ class UserRepository extends CrudRepository implements UserRepositoryInterface
         }
         $user->password = Hash::make($newPassword);
         $user->save();
+
+        return $user;
+    }
+
+    public function completeProfile(array $data): User
+    {
+        /** @var \App\Models\User $user **/
+        $user = Auth::guard('user')->user();
+
+        if (isset($data['avatar'])) {
+            $data['avatar'] = storeFile($data['avatar'], 'avatars');
+        }
+
+        $user->update($data);
 
         return $user;
     }

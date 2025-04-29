@@ -51,5 +51,9 @@ Route::prefix('user')->group(function () {
     Route::post('send-phone-otp', [UserController::class, 'sendPhoneOtp']);
     Route::post('verify-phone-otp', [UserController::class, 'verifyPhoneOtp']);
     Route::post('set-password', [UserController::class, 'setPassword']);
+
+    Route::middleware(['auth:user'])->group(function () {
+        Route::post('complete-profile', [UserController::class, 'completeProfile']);
+    });
 });
 ////////////////////////////////////////// users ////////////////////////////////

@@ -20,4 +20,6 @@ interface UserRepositoryInterface extends ICrudRepository
     public function verifyPhoneOtp(string $phone, string $otp): bool;
 
     public function setPassword(array $data): ?User;
+
+    public function completeProfile(array $data): User;
 }

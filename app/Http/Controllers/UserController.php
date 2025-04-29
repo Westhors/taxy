@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\JsonResponse;
+use App\Http\Requests\Users\Auth\CompleteProfileRequest;
 use App\Http\Requests\Users\Auth\LoginRequest;
 use App\Http\Requests\Users\Auth\RegisterRequest;
 use App\Http\Requests\Users\Auth\SendEmailOTPRequest;
@@ -117,12 +118,27 @@ class UserController extends  BaseController
 
     public function setPassword(SetPasswordRequest $request)
     {
-        $user = $this->userRepository->setPassword($request->validated());
+        try {
+            $user = $this->userRepository->setPassword($request->validated());
 
-        if (!$user) {
-            return $this->error("Error Occured", 422);
+            if (!$user) {
+                return $this->error("Error Occured", 422);
+            }
+
+            return $this->success(new UserResource($user), 'Password set successfully.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
         }
+    }
 
-        return $this->success(new UserResource($user), 'Password set successfully.');
+    public function completeProfile(CompleteProfileRequest $request)
+    {
+        try {
+            $user = $this->userRepository->completeProfile($request->validated());
+
+            return $this->success(new UserResource($user), 'Profile completed successfully.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
     }
 }
