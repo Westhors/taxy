@@ -335,4 +335,53 @@ class DriverController extends BaseController
             return JsonResponse::respondError($e->getMessage());
         }
     }
+
+
+    public function uploadLicenseFront(Request $request)
+    {
+        try {
+            $request->validate([
+                'license_front' => ['required', 'image', 'max:2048'],
+            ]);
+
+            $driver = auth('driver')->user();
+            $driver->license_front = storeFile($request->file('license_front'), 'license_fronts');
+            $driver->save();
+            return $this->success(null, 'License front uploaded successfully.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    public function uploadLicenseBack(Request $request)
+    {
+        try {
+            $request->validate([
+                'license_back' => ['required', 'image', 'max:2048'],
+            ]);
+
+            $driver = auth('driver')->user();
+            $driver->license_back = storeFile($request->file('license_back'), 'license_back');
+            $driver->save();
+            return $this->success(null, 'License back uploaded successfully.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    public function uploadCriminalRecord(Request $request)
+    {
+        try {
+            $request->validate([
+                'criminal_record' => ['required', 'image', 'max:2048'],
+            ]);
+
+            $driver = auth('driver')->user();
+            $driver->criminal_record = storeFile($request->file('criminal_record'), 'criminal_record');
+            $driver->save();
+            return $this->success(null, 'Criminal record uploaded successfully.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
 }

@@ -24,6 +24,9 @@ return new class extends Migration
             $table->foreignId('city_id')->nullable()->constrained('cities')->cascadeOnDelete();
             $table->foreignId('district_id')->nullable()->constrained('districts')->cascadeOnDelete();
             $table->string('avatar')->nullable();
+            $table->string('license_front')->nullable();
+            $table->string('license_back')->nullable();
+            $table->string('criminal_record')->nullable();
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
