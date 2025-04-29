@@ -53,7 +53,9 @@ Route::prefix('user')->group(function () {
     Route::post('set-password', [UserController::class, 'setPassword']);
 
     Route::middleware(['auth:user'])->group(function () {
+        Route::get('check-auth', [UserController::class, 'checkAuth']);
         Route::post('complete-profile', [UserController::class, 'completeProfile']);
+        Route::post('logout', [UserController::class, 'logout']);
     });
 });
 ////////////////////////////////////////// users ////////////////////////////////

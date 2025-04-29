@@ -155,4 +155,20 @@ class UserRepository extends CrudRepository implements UserRepositoryInterface
 
         return $user;
     }
+
+    public function logout(): bool
+    {
+        /** @var \App\Models\User $user **/
+        $user = Auth::guard('user')->user();
+
+        if ($user) {
+            $user->tokens()->delete();
+
+            $user->currentAccessToken()->delete();
+
+            return true;
+        }
+
+        return false;
+    }
 }

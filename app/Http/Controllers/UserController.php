@@ -17,6 +17,8 @@ use App\Models\User;
 use App\Traits\HttpResponses;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class UserController extends  BaseController
 {
@@ -137,6 +139,29 @@ class UserController extends  BaseController
             $user = $this->userRepository->completeProfile($request->validated());
 
             return $this->success(new UserResource($user), 'Profile completed successfully.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    public function checkAuth(Request $request)
+    {
+        if (Auth::check()) {
+            return $this->success(new UserResource(Auth::guard('user')->user()), 'User logged in successfully');
+        } else {
+            return $this->error(null, 'User is not authenticated');
+        }
+    }
+
+    public function logout()
+    {
+        try {
+            $success = $this->userRepository->logout();
+            if ($success) {
+                return $this->success(null, 'logout successfully.');
+            } else {
+                return $this->error(null, 'User is not authenticated');
+            }
         } catch (Exception $e) {
             return JsonResponse::respondError($e->getMessage());
         }

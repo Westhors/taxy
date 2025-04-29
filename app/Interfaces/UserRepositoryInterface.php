@@ -22,4 +22,6 @@ interface UserRepositoryInterface extends ICrudRepository
     public function setPassword(array $data): ?User;
 
     public function completeProfile(array $data): User;
+
+    public function logout(): bool;
 }
