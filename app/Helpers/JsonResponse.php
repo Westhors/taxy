@@ -51,6 +51,8 @@ class JsonResponse
         ]);
     }
 
+
+
     public static function respondValidationError(ValidationException $e)
     {
         return response()->json([
@@ -80,4 +82,5 @@ class JsonResponse
     {
         return ['result' => trans(self::MSG_SUCCESS), 'message' => trans(self::MSG_UPDATED_SUCCESSFULLY), 'status' => 200];
     }
+    
 }

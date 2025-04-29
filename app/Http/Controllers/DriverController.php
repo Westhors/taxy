@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\JsonResponse;
-use App\Http\Requests\DriverRequest;
+use App\Http\Requests\Driver\Auth\DriverCompleteProfileRequest;
+use App\Http\Requests\Driver\Auth\DriverRequest;
+use App\Http\Requests\Driver\Auth\DriverSetNewPasswordRequest;
+use App\Http\Requests\Driver\Auth\MakePasswordRequest;
 use App\Http\Resources\DriverResource;
 use Illuminate\Support\Carbon;
 use App\Interfaces\DriverRepositoryInterface;
@@ -14,9 +17,13 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Notifications\VerifyBusinessEmail;
 use Illuminate\Support\Facades\Notification;
+use App\Traits\HttpResponses;
+use Illuminate\Support\Facades\Auth;
 
 class DriverController extends BaseController
 {
+    use HttpResponses;
+
     protected mixed $crudRepository;
 
     public function __construct(DriverRepositoryInterface $pattern)
@@ -171,14 +178,8 @@ class DriverController extends BaseController
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'password' => Hash::make($request->password),
             ]);
-            return response()->json([
-                "result" => "Success",
-                'data' => new DriverResource($driver),
-                'message' => 'Driver registered successfully',
-                'status' => true,
-            ]);
+            return $this->success(new DriverResource($driver), 'driver registered successfully');
         } catch (Exception $e) {
             return JsonResponse::respondError($e->getMessage());
         }
@@ -189,100 +190,149 @@ class DriverController extends BaseController
     {
         try {
             $driver = Driver::where('email', $request->email)->first();
-
-            if (!$driver) {
-                return response()->json([
-                    'result' => "Error",
-                    'data' => null,
-                    'message' => 'Driver not found',
-                    'status' => 404,
-                ], 404);
-            }
             if ($driver->email_verified_at == null) {
                 $verificationCode = mt_rand(100000, 999999);
                 $expiryTime = Carbon::now()->addHours(2);
-
                 $driver->update([
                     'code_verify' => $verificationCode,
                     'expiry_time_code_verify' => $expiryTime,
                 ]);
-
                 Notification::send($driver, new VerifyBusinessEmail($verificationCode));
-
-                return response()->json([
-                    "result" => "Success",
-                    'data' => ["id" => $driver->id],
-                    'message' => 'Verification code sent to email. This code is valid for 2 hours.',
-                    'status' => true,
-                ]);
+                return $this->success(null, 'OTP sent to email. This code is valid for 2 hours.');
             } else {
-                return response()->json([
-                    'result' => "Error",
-                    'data' => null,
-                    'message' => 'Your email is already verified. If you forgot your password, please use the reset password option or contact support.',
-                    'status' => 403,
-                ], 403);
+                return $this->error('Your email is already verified. If you forgot your password, please use the reset password option or contact support.', 403);
             }
         } catch (Exception $e) {
-            return response()->json([
-                'result' => "Error",
-                'data' => null,
-                'message' => $e->getMessage(),
-                'status' => 500
-            ], 500);
+            return JsonResponse::respondError($e->getMessage());
         }
     }
 
     public function checkVerificationCode(Request $request)
     {
         try {
-            $driver = Driver::where('id', $request->id)->first();
-            if (!$driver) {
-                return response()->json([
-                    'result' => "Error",
-                    'data' => null,
-                    'message' => 'Driver not found',
-                    'status' => 404,
-                ], 404);
-            }
+            $driver = Driver::where('email', $request->email)->first();
             if ($driver->code_verify != $request->code) {
-                return response()->json([
-                    'result' => "Error",
-                    'data' => null,
-                    'message' => 'Invalid verification code',
-                    'status' => 400,
-                ], 400);
+                return $this->error('Invalid verification code', 400);
             }
-
             if (Carbon::now()->diffInHours($driver->expiry_time_code_verify) >= 2) {
-                return response()->json([
-                    'result' => "Error",
-                    'data' => null,
-                    'message' => 'Verification code expired',
-                    'status' => 400,
-                ], 400);
+                return $this->error('Verification code expired', 400);
             }
-
             $driver->update([
                 'code_verify' => null,
                 'expiry_time_code_verify' => null,
                 'email_verified_at' => Carbon::now()->addHours(2),
             ]);
             $token = $driver->createToken('authToken')->plainTextToken;
-            return response()->json([
-                'result' => "Success",
-                'data' => new DriverResource($driver),
-                'message' => 'Email verified successfully',
-                'status' => 200,
-                'token' => $token
-            ]);
+            return $this->success(null, 'Email verified successfully');
         } catch (Exception $e) {
-            return response()->json([
-                'result' => "Error",
-                'data' => null,
-                'message' => $e->getMessage(),
-                'status' => 500,
-            ], 500);
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+
+    public function setPassword(MakePasswordRequest $request)
+    {
+        try {
+            $driver = $this->crudRepository->setPassword($request->validated());
+            if ($driver) {
+                $token = $driver->createToken('driver-api-token', ['user'])->plainTextToken;
+                return $this->success([
+                    'driver' => new DriverResource($driver),
+                    'token' => $token,
+                ], 'Password set successfully.');
+            }
+            return $this->error("Password can't set", 422);
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+
+    public function completeProfile(DriverCompleteProfileRequest $request)
+    {
+        try {
+            $driver = $this->crudRepository->completeProfile($request->validated());
+            if (isset($data['avatar'])) {
+                $data['avatar'] = storeFile($data['avatar'], 'avatars'); // نحذفه
+            }
+            return $this->success(new DriverResource($driver), 'Profile completed successfully.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    public function checkAuth(Request $request)
+    {
+        if (Auth::check()) {
+            return $this->success(new DriverResource(Auth::guard('driver')->user()), 'Driver logged in successfully');
+        } else {
+            return $this->error(null, 'Driver is not authenticated');
+        }
+    }
+
+    public function logout()
+    {
+        try {
+            Auth::guard('driver')->user()->tokens()->delete();
+            return JsonResponse::respondSuccess('Successfully logged out');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+
+    public function forgotPassword(Request $request)
+    {
+        try {
+            $driver = Driver::where('email', $request->email)->first();
+            $verificationCode = mt_rand(100000, 999999);
+            $expiryTime = Carbon::now()->addHours(2);
+            $driver->update([
+                'code_verify' => $verificationCode,
+                'expiry_time_code_verify' => $expiryTime,
+            ]);
+            Notification::send($driver, new VerifyBusinessEmail($verificationCode));
+            return $this->success(null, 'OTP sent to email. This code is valid for 2 hours.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    public function verifyEmailOrPhoneOtp(Request $request)
+    {
+        try {
+            $driver = Driver::where('email', $request->email)->first();
+            if ($driver->code_verify != $request->code) {
+                return $this->error('Invalid verification code', 400);
+            }
+            if (Carbon::now()->diffInHours($driver->expiry_time_code_verify) >= 2) {
+                return $this->error('Verification code expired', 400);
+            }
+            $driver->update([
+                'code_verify' => null,
+                'expiry_time_code_verify' => null,
+                'email_verified_at' => Carbon::now()->addHours(2),
+            ]);
+            $token = $driver->createToken('authToken')->plainTextToken;
+            return $this->success(null, 'Email verified successfully');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+
+    public function setNewPassword(DriverSetNewPasswordRequest $request)
+    {
+        try {
+            $driver = Driver::where('email', $request->email)->first();
+            if (!$driver) {
+                return $this->error('Driver not found', 400);
+            }
+            $driver->password = Hash::make($request->password);
+            $driver->save();
+            return $this->success(null, 'Password updated successfully.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Driver\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
@@ -12,7 +12,7 @@ class DriverRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // السماح للجميع
+        return true; 
     }
 
     public function rules(): array
@@ -21,7 +21,6 @@ class DriverRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:drivers,email',
             'phone' => 'nullable|string|max:20',
-            'password' => ['required', 'confirmed', Password::min(6)],
         ];
     }
 }

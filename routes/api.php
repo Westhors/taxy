@@ -33,12 +33,22 @@ Route::post('/admin/login', [AdminController::class, 'login']);
 
 
 ////////////////////////////////////////// driver ////////////////////////////////
+Route::prefix('driver')->middleware('appthrottle:7')->group(function () {
+    Route::post('login', [DriverController::class, 'login']);
+    Route::post('register', [DriverController::class, 'register']);
+    Route::post('verify-email', [DriverController::class, 'verifyEmail']);
+    Route::post('check-verification-code', [DriverController::class, 'checkVerificationCode']);
+    Route::post('set-password', [DriverController::class, 'setPassword']);
+    Route::post('forgot-password', [DriverController::class, 'forgotPassword']);
+    Route::post('forgot-verify-otp', [DriverController::class, 'verifyEmailOrPhoneOtp']);
+    Route::post('set-new-password', [DriverController::class, 'setNewPassword']);
 
-Route::post('driver/login', [DriverController::class, 'login']);
-Route::post('driver/register', [DriverController::class, 'register']);
-Route::post('driver/verify-email', [DriverController::class, 'verifyEmail']);
-Route::post('driver/check-verification-code', [DriverController::class, 'checkVerificationCode']);
-
+    Route::middleware(['auth:driver'])->group(function () {
+        Route::get('check-auth', [DriverController::class, 'checkAuth']);
+        Route::post('complete-profile', [DriverController::class, 'completeProfile']);
+        Route::post('logout', [DriverController::class, 'logout']);
+    });
+});
 ////////////////////////////////////////// driver ////////////////////////////////
 
 
