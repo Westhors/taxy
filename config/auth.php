@@ -40,7 +40,18 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        'admins' => [
+
+        'user' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
+
+        'driver' => [
+            'driver' => 'sanctum',
+            'provider' => 'drivers',
+        ],
+
+        'admin' => [
             'driver' => 'sanctum',
             'provider' => 'admins',
         ],
@@ -70,6 +81,11 @@ return [
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
+        'drivers' => [
+            'driver' => 'eloquent',
+            'model' => env('AUTH_MODEL', App\Models\Driver::class),
+        ],
+
         'admins' => [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
@@ -94,7 +110,7 @@ return [
     |
     */
 
-   'passwords' => [
+    'passwords' => [
         'users' => [
             'provider' => 'users',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),

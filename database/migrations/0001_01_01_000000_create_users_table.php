@@ -13,11 +13,19 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
-            $table->string('email')->nullable();
-            $table->string('phone')->nullable();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('phone')->unique()->nullable();
+            $table->enum('gender', ['male', 'female', 'other'])->nullable();
+            $table->string('avatar')->nullable();
             $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('phone_verified_at')->nullable();
             $table->string('password')->nullable();
+            $table->timestamp('first_login_at')->nullable();
+
+            $table->foreignId('city_id')->nullable()->constrained('cities')->cascadeOnDelete();
+            $table->foreignId('district_id')->nullable()->constrained('districts')->cascadeOnDelete();
+
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

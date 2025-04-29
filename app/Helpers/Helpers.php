@@ -855,3 +855,11 @@ if (!function_exists('generateUUID')) {
         return 'EV-' . $date . $paddedOrderId . $randomDigits;
     }
 }
+
+if (!function_exists('storeFile')) {
+    function storeFile($file, string $folder = 'files'): string
+    {
+        $path = $file->store('uploads/' . $folder, 'public');
+        return $path;
+    }
+}
