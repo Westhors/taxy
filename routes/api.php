@@ -43,18 +43,18 @@ Route::post('driver/check-verification-code', [DriverController::class, 'checkVe
 
 
 ////////////////////////////////////////// users ////////////////////////////////
-Route::prefix('user')->group(function () {
-    Route::post('register', [UserController::class, 'register'])->middleware('throttle:5,1');
-    Route::post('login', [UserController::class, 'login'])->middleware('throttle:5,1');
+Route::prefix('user')->middleware('appthrottle:7')->group(function () {
+    Route::post('register', [UserController::class, 'register']);
+    Route::post('login', [UserController::class, 'login']);
     Route::post('send-email-otp', [UserController::class, 'sendEmailOtp']);
     Route::post('verify-email-otp', [UserController::class, 'verifyEmailOtp']);
     Route::post('send-phone-otp', [UserController::class, 'sendPhoneOtp']);
     Route::post('verify-phone-otp', [UserController::class, 'verifyPhoneOtp']);
     Route::post('set-password', [UserController::class, 'setPassword']);
     // Forget password
-    Route::post('forgot-password', [UserController::class, 'forgotPassword']);   // Step 1
-    Route::post('forgot-verify-otp', [UserController::class, 'verifyEmailOrPhoneOtp']); // Step 2
-    Route::post('set-new-password', [UserController::class, 'setNewPassword']);  // Step 3
+    Route::post('forgot-password', [UserController::class, 'forgotPassword']);
+    Route::post('forgot-verify-otp', [UserController::class, 'verifyEmailOrPhoneOtp']);
+    Route::post('set-new-password', [UserController::class, 'setNewPassword']);
 
     Route::middleware(['auth:user'])->group(function () {
         Route::get('check-auth', [UserController::class, 'checkAuth']);

@@ -58,7 +58,6 @@ class UserController extends  BaseController
                 ], 'Login successful');
             }
 
-            // Return error response if login fails
             return $this->error('Invalid credentials', 401);
         } catch (Exception $e) {
             return JsonResponse::respondError($e->getMessage());
