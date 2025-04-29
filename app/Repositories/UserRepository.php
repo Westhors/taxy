@@ -98,7 +98,7 @@ class UserRepository extends CrudRepository implements UserRepositoryInterface
         $userOtp->updated_at = now();
         $userOtp->save();
 
-        // Send OTP to phone job
+        //TODO: Send OTP to phone job
 
         return $otp;
     }

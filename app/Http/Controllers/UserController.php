@@ -13,12 +13,10 @@ use App\Http\Requests\Users\Auth\VerifyEmailOTPRequest;
 use App\Http\Requests\Users\Auth\VerifyPhoneOTPRequest;
 use App\Http\Resources\UserResource;
 use App\Interfaces\UserRepositoryInterface;
-use App\Models\User;
 use App\Traits\HttpResponses;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 
 class UserController extends  BaseController
 {
@@ -124,7 +122,7 @@ class UserController extends  BaseController
             $user = $this->userRepository->setPassword($request->validated());
 
             if (!$user) {
-                return $this->error("Error Occured", 422);
+                return $this->error("Password can't set", 422);
             }
 
             return $this->success(new UserResource($user), 'Password set successfully.');
