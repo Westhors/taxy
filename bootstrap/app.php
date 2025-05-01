@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\ForceJsonResponse;
+use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\SnakeCaseMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             SnakeCaseMiddleware::class,
             ForceJsonResponse::class,
+            SetLocale::class,
         ]);
 
         $middleware->alias([
