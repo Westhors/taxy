@@ -15,13 +15,15 @@ class NewOrderRequest implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public ?Order $order;
+    public Order $order;
+    public $driverId;
     /**
      * Create a new event instance.
      */
-    public function __construct($order)
+    public function __construct($order, $driverId)
     {
         $this->order = $order;
+        $this->driverId = $driverId;
     }
 
     /**
@@ -32,7 +34,19 @@ class NewOrderRequest implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('order'),
+            new PrivateChannel('driver.' . $this->driverId),  // Use as 'private-driver.1'
+        ];
+    }
+
+    public function broadcastAs(): string
+    {
+        return 'new-order'; // Use as '.new-order'
+    }
+
+    public function broadcastWith(): array
+    {
+        return [
+            'order' => $this->order,
         ];
     }
 }

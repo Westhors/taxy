@@ -15,7 +15,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Driver extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, LogsActivity, HasRoles , MustVerifyEmail;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, LogsActivity, HasRoles, MustVerifyEmail;
 
     protected $guarded = ['id'];
 
@@ -46,5 +46,18 @@ class Driver extends Authenticatable
             }
         }
         return $builder;
+    }
+
+    public function scopeNearby($query, $lat, $lng, $distance = 10)
+    {
+        return $query->selectRaw("*, (
+            6371 * acos(
+                cos(radians(?)) * cos(radians(latitude)) *
+                cos(radians(longitude) - radians(?)) +
+                sin(radians(?)) * sin(radians(latitude))
+            )
+        ) AS distance", [$lat, $lng, $lat])
+            ->having("distance", "<", $distance)
+            ->orderBy("distance");
     }
 }

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewOrderRequest;
 use App\Http\Requests\Users\Orders\CreateOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Interfaces\OrderRepositoryInterface;
 use App\Traits\HttpResponses;
 use App\Helpers\JsonResponse;
+use App\Models\Driver;
 use Exception;
 
 class OrderController extends Controller

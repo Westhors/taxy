@@ -28,6 +28,7 @@ class TestOrder extends Command
     public function handle()
     {
         $id =  $this->option('id');
-        broadcast(new NewOrderRequest(null));
+        $order = Order::find($id);
+        broadcast(new NewOrderRequest($order, 1));
     }
 }

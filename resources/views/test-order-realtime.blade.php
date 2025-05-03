@@ -15,12 +15,17 @@
 </head>
 
 <body class="font-sans antialiased dark:bg-black dark:text-white/50">
+    {{-- Test --}}
     <script>
         window.addEventListener('DOMContentLoaded', function() {
-            window.Echo.channel('order')
-                .listen('NewOrderRequest', (e) => {
-                    //
+            window.Echo.private('driver.1')
+                .listen('.new-order', (e) => {
+                    console.log(e);
                 });
+            // window.Echo.channel('order')
+            //     .listen('NewOrderRequest', (e) => {
+            //         console.log(e);
+            //     });
         });
     </script>
 </body>

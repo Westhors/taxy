@@ -3,11 +3,14 @@
 namespace App\Repositories;
 
 use App\Enums\OrderStatus;
+use App\Events\NewOrderRequest;
 use App\Interfaces\OrderRepositoryInterface;
-
+use App\Models\Driver;
 use App\Models\Order;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderRepository extends CrudRepository implements OrderRepositoryInterface
 {
@@ -47,7 +50,23 @@ class OrderRepository extends CrudRepository implements OrderRepositoryInterface
                 'expected_price' => $data['expected_price'],
             ]);
 
+            $this->sendOrderToNearBy($order, $data['pick_lat'], $data['pick_lng']);
+
             return $order;
         });
+    }
+
+    public function sendOrderToNearBy(Order $order, $pick_lat = null, $pick_lng = null): void
+    {
+        $nearbyDrivers = Driver::nearby($pick_lat, $pick_lng)->get();
+
+        foreach ($nearbyDrivers as $driver) {
+            try {
+                broadcast(new NewOrderRequest($order, $driver->id));
+                // NewOrderRequest::dispatch($order, $driver->id)->onQueue('broadcasting');
+            } catch (Exception $e) {
+                Log::error('Error broadcasting to driver ' . $driver->id . ': ' . $e->getMessage());
+            }
+        }
     }
 }
