@@ -18,7 +18,7 @@
     {{-- Test --}}
     <script>
         window.addEventListener('DOMContentLoaded', function() {
-            window.Echo.private('driver.1')
+            window.Echo.channel('driver.1')
                 .listen('.new-order', (e) => {
                     console.log(e);
                 });

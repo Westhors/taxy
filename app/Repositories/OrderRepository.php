@@ -63,7 +63,6 @@ class OrderRepository extends CrudRepository implements OrderRepositoryInterface
         foreach ($nearbyDrivers as $driver) {
             try {
                 broadcast(new NewOrderRequest($order, $driver->id));
-                // NewOrderRequest::dispatch($order, $driver->id)->onQueue('broadcasting');
             } catch (Exception $e) {
                 Log::error('Error broadcasting to driver ' . $driver->id . ': ' . $e->getMessage());
             }

@@ -34,7 +34,7 @@ class NewOrderRequest implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('driver.' . $this->driverId),  // Use as 'private-driver.1'
+            new Channel('driver.' . $this->driverId),  // Use as 'private-driver.1'
         ];
     }
 
