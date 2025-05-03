@@ -27,8 +27,8 @@ return new class extends Migration
             $table->string('license_front')->nullable();
             $table->string('license_back')->nullable();
             $table->string('criminal_record')->nullable();
-            $table->decimal('latitude', 12, 9);
-            $table->decimal('longitude', 12, 9);
+            $table->decimal('latitude', 12, 9)->nullable();
+            $table->decimal('longitude', 12, 9)->nullable();
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();

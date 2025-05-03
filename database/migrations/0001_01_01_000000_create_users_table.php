@@ -22,8 +22,8 @@ return new class extends Migration
             $table->timestamp('phone_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->timestamp('first_login_at')->nullable();
-            $table->decimal('latitude', 12, 9);
-            $table->decimal('longitude', 12, 9);
+            $table->decimal('latitude', 12, 9)->nullable();
+            $table->decimal('longitude', 12, 9)->nullable();
 
             $table->foreignId('city_id')->nullable()->constrained('cities')->cascadeOnDelete();
             $table->foreignId('district_id')->nullable()->constrained('districts')->cascadeOnDelete();
