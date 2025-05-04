@@ -40,8 +40,9 @@ return new class extends Migration
             $table->boolean('is_breakable')->nullable();
             //
             $table->timestamp('schedule_time')->nullable();
-            $table->decimal('expected_price', 10, 2)->nullable(); 
+            $table->decimal('expected_price', 10, 2)->nullable();
             $table->decimal('final_price', 10, 2)->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
