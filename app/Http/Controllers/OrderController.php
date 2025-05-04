@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewOrderOfferRequest;
 use App\Events\NewOrderRequest;
 use App\Http\Requests\Users\Orders\CreateOrderRequest;
 use App\Http\Resources\OrderResource;
@@ -9,7 +10,10 @@ use App\Interfaces\OrderRepositoryInterface;
 use App\Traits\HttpResponses;
 use App\Helpers\JsonResponse;
 use App\Models\Driver;
+use App\Models\Order;
+use App\Models\OrderRequest;
 use Exception;
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -32,6 +36,30 @@ class OrderController extends Controller
             }
 
             return $this->error('Order creation faild', 400);
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    public function createOrderDriver(Request $request, Order $order)
+    {
+        try {
+            $request->validate([
+                'proposed_price' => 'required|numeric|min:0',
+                'note' => 'nullable|string',
+            ]);
+
+            $driver = auth()->guard('driver')->user();
+
+            $orderRequest = OrderRequest::create([
+                'order_id' => $order->id,
+                'driver_id' => $driver->id,
+                'proposed_price' => $request->proposed_price,
+                'note' => $request->note,
+            ]);
+
+            broadcast(new NewOrderOfferRequest($orderRequest))->toOthers();
+            return $this->success($orderRequest, 'Request sent');
         } catch (Exception $e) {
             return JsonResponse::respondError($e->getMessage());
         }
