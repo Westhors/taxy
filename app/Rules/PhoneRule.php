@@ -19,10 +19,11 @@ class PhoneRule implements ValidationRule
 
     public function passes($attribute, $value)
     {
-        return preg_match(
-            '%^(?:(?:\(?(?:00|\+)([1-4]\d\d|[1-9]\d?)\)?)?[\-\.\ \\\/]?)?((?:\(?\d{1,}\)?[\-\.\ \\\/]?){0,})(?:[\-\.\ \\\/]?(?:#|ext\.?|extension|x)[\-\.\ \\\/]?(\d+))?$%i',
-            $value
-        ) && strlen($value) >= 10;
+        return preg_match('/^\+?[0-9]\d{1,14}$/', $value);
+        // return preg_match(
+        //     '%^(?:(?:\(?(?:00|\+)([1-4]\d\d|[1-9]\d?)\)?)?[\-\.\ \\\/]?)?((?:\(?\d{1,}\)?[\-\.\ \\\/]?){0,})(?:[\-\.\ \\\/]?(?:#|ext\.?|extension|x)[\-\.\ \\\/]?(\d+))?$%i',
+        //     $value
+        // ) && strlen($value) >= 10;
     }
 
     public function message()

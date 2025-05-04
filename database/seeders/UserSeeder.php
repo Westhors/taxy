@@ -22,6 +22,8 @@ class UserSeeder extends Seeder
             'avatar' =>  fake()->imageUrl(),
             'email_verified_at' => now(),
             'first_login_at' => now(),
+            'latitude' => 12.971598,
+            'longitude' => 77.594566,
             'city_id' => City::first()->id,
             'district_id' => District::first()->id,
         ]);

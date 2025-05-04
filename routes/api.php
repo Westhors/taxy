@@ -1,12 +1,16 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CityController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\transactionController;
 use App\Http\Controllers\UserController;
+use App\Models\District;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -57,7 +61,7 @@ Route::prefix('driver')->middleware('appthrottle:7')->group(function () {
 
 
 ////////////////////////////////////////// users ////////////////////////////////
-Route::prefix('user')->middleware('appthrottle:7')->group(function () {
+Route::prefix('user')->middleware('appthrottle:15')->group(function () {
     Route::post('register', [UserController::class, 'register']);
     Route::post('login', [UserController::class, 'login']);
     Route::post('send-email-otp', [UserController::class, 'sendEmailOtp']);
@@ -74,6 +78,17 @@ Route::prefix('user')->middleware('appthrottle:7')->group(function () {
         Route::get('check-auth', [UserController::class, 'checkAuth']);
         Route::post('complete-profile', [UserController::class, 'completeProfile']);
         Route::post('logout', [UserController::class, 'logout']);
+
+        ////? Orders
+        Route::post('create-order', [OrderController::class, 'createOrder']);
     });
 });
 ////////////////////////////////////////// users ////////////////////////////////
+
+
+////////////////////////////////////////// general ////////////////////////////////
+Route::middleware('appthrottle:15')->group(function () {
+    Route::get('cities', [CityController::class, 'index']);
+    Route::get('districts', [DistrictController::class, 'index']);
+});
+////////////////////////////////////////// general ////////////////////////////////
