@@ -1,13 +1,16 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CityController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\transactionController;
 use App\Http\Controllers\UserController;
+use App\Models\District;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -81,3 +84,11 @@ Route::prefix('user')->middleware('appthrottle:15')->group(function () {
     });
 });
 ////////////////////////////////////////// users ////////////////////////////////
+
+
+////////////////////////////////////////// general ////////////////////////////////
+Route::middleware('appthrottle:15')->group(function () {
+    Route::get('cities', [CityController::class, 'index']);
+    Route::get('districts', [DistrictController::class, 'index']);
+});
+////////////////////////////////////////// general ////////////////////////////////
