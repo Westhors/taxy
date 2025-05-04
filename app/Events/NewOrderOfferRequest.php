@@ -40,8 +40,12 @@ class NewOrderOfferRequest implements ShouldBroadcast
             'order_id' => $this->orderRequest->order_id,
             'driver_id' => $this->orderRequest->driver_id,
             'proposed_price' => $this->orderRequest->proposed_price,
+            'latitude' => $this->orderRequest->latitude,
+            'longitude' => $this->orderRequest->longitude,
             'note' => $this->orderRequest->note,
             'status' => $this->orderRequest->status,
         ];
     }
 }
+
+

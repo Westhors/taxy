@@ -18,6 +18,8 @@ return new class extends Migration
             $table->decimal('proposed_price', 10, 2)->nullable();
             $table->string('status')->nullable();
             $table->text('note')->nullable(); // ملاحظات من السائق
+            $table->decimal('latitude', 12, 9)->nullable();
+            $table->decimal('longitude', 12, 9)->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

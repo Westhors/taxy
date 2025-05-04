@@ -47,17 +47,18 @@ class OrderController extends Controller
             $request->validate([
                 'proposed_price' => 'required|numeric|min:0',
                 'note' => 'nullable|string',
+                'latitude' => 'nullable|string',
+                'longitude' => 'nullable|string',
             ]);
-
             $driver = auth()->guard('driver')->user();
-
             $orderRequest = OrderRequest::create([
                 'order_id' => $order->id,
                 'driver_id' => $driver->id,
                 'proposed_price' => $request->proposed_price,
                 'note' => $request->note,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
             ]);
-
             broadcast(new NewOrderOfferRequest($orderRequest))->toOthers();
             return $this->success($orderRequest, 'Request sent');
         } catch (Exception $e) {
