@@ -44,6 +44,7 @@ class CreateOrderRequest extends FormRequest
             'receiver_phone' => ['nullable', 'string', 'phone', 'max:20'],
             'receiver_remark' => ['nullable', 'string'],
             'shipment_type' => ['nullable', 'string', 'max:50'],
+            'shipment_details' => ['nullable', 'string'],
             'weight' => ['nullable', 'numeric', 'min:0'],
             'dimensions' => ['nullable', 'string'],
             'is_breakable' => ['nullable', 'boolean'],
@@ -51,6 +52,7 @@ class CreateOrderRequest extends FormRequest
             // Schedule and Pricing
             'schedule_time' => ['nullable', 'date', 'after_or_equal:now'],
             'expected_price' => ['nullable', 'numeric', 'min:0'],
+            'kms_num' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 
@@ -77,11 +79,13 @@ class CreateOrderRequest extends FormRequest
             'receiver_phone' => 'Receiver Phone',
             'receiver_remark' => 'Receiver Remark',
             'shipment_type' => 'Shipment Type',
+            'shipment_details' => 'Shipment Details',
             'weight' => 'Weight',
             'dimensions' => 'Dimensions',
             'is_breakable' => 'Is Breakable',
             'schedule_time' => 'Schedule Time',
             'expected_price' => 'Expected Price',
+            'kms_num' => 'Numbers of KMs',
         ];
     }
 }

@@ -35,12 +35,14 @@ return new class extends Migration
             $table->string('receiver_phone')->nullable();
             $table->text('receiver_remark')->nullable();
             $table->string('shipment_type')->nullable();
+            $table->text('shipment_details')->nullable();
             $table->decimal('weight', 8, 2)->nullable();
             $table->string('dimensions')->nullable();
             $table->boolean('is_breakable')->nullable();
             //
             $table->timestamp('schedule_time')->nullable();
             $table->decimal('expected_price', 10, 2)->nullable();
+            $table->decimal('kms_num', 10, 2)->nullable();
             $table->decimal('final_price', 10, 2)->nullable();
             $table->softDeletes();
             $table->timestamps();

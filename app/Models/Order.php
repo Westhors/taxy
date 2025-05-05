@@ -30,12 +30,14 @@ class Order extends Model
         'receiver_phone',
         'receiver_remark',
         'shipment_type',
+        'shipment_details',
         'weight',
         'dimensions',
         'is_breakable',
         'schedule_time',
         'expected_price',
         'final_price',
+        'kms_num',
     ];
 
     protected $casts = [
@@ -46,6 +48,7 @@ class Order extends Model
         'drop_lng' => 'decimal:9',
         'weight'   => 'decimal:2',
         'expected_price' => 'decimal:2',
+        'kms_num' => 'decimal:2',
         'final_price' => 'decimal:2',
         'schedule_time' => 'datetime',
         'is_breakable' => 'boolean',
@@ -59,5 +62,23 @@ class Order extends Model
     public function driver()
     {
         return $this->belongsTo(Driver::class);
+    }
+
+    public function orderRequests()
+    {
+        return $this->hasMany(OrderRequest::class);
+    }
+
+    public function acceptOrder(OrderRequest $orderRequest): void
+    {
+        if ($this->status !== OrderStatus::Pending) {
+            throw new \DomainException('Only pending orders can be accepted.');
+        }
+
+        $this->update([
+            'status' => OrderStatus::Accepted->value,
+            'driver_id' => $orderRequest->driver_id,
+            'final_price' => $orderRequest->proposed_price,
+        ]);
     }
 }

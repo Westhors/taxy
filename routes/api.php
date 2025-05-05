@@ -6,9 +6,6 @@ use App\Http\Controllers\CountryController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\SettingController;
-use App\Http\Controllers\transactionController;
 use App\Http\Controllers\UserController;
 use App\Models\District;
 use Illuminate\Http\Request;
@@ -56,9 +53,7 @@ Route::prefix('driver')->middleware('appthrottle:7')->group(function () {
         Route::post('complete-profile', [DriverController::class, 'completeProfile']);
         Route::post('logout', [DriverController::class, 'logout']);
 
-
         Route::post('orders/{order}/request', [OrderController::class, 'createOrderDriver']);
-
     });
 });
 ////////////////////////////////////////// driver ////////////////////////////////
@@ -85,6 +80,7 @@ Route::prefix('user')->middleware('appthrottle:15')->group(function () {
 
         ////? Orders
         Route::post('create-order', [OrderController::class, 'createOrder']);
+        Route::post('accept-order-request', [OrderController::class, 'acceptOrderRequest']);
     });
 });
 ////////////////////////////////////////// users ////////////////////////////////

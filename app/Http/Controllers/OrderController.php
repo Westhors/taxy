@@ -9,6 +9,7 @@ use App\Http\Resources\OrderResource;
 use App\Interfaces\OrderRepositoryInterface;
 use App\Traits\HttpResponses;
 use App\Helpers\JsonResponse;
+use App\Http\Requests\Users\Orders\AcceptOrderRequestRequest;
 use App\Models\Driver;
 use App\Models\Order;
 use App\Models\OrderRequest;
@@ -31,11 +32,22 @@ class OrderController extends Controller
         try {
             $order = $this->orderRepository->createOrder($request->validated());
 
-            if ($order) {
-                return $this->success(new OrderResource($order), 'Order created successfully');
-            }
+            return $order
+                ? $this->success(new OrderResource($order), 'Order created successfully')
+                : $this->error('Order creation faild.', 400);
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
 
-            return $this->error('Order creation faild', 400);
+    public function acceptOrderRequest(AcceptOrderRequestRequest $request)
+    {
+        try {
+            $order = $this->orderRepository->acceptOrderRequest($request->validated());
+
+            return $order
+                ? $this->success(new OrderResource($order), 'Order accepted successfully')
+                : $this->error('Invalid or non-pending order request.', 400);
         } catch (Exception $e) {
             return JsonResponse::respondError($e->getMessage());
         }
