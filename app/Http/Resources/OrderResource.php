@@ -39,6 +39,7 @@ class OrderResource extends JsonResource
             'receiver_phone' => $this->receiver_phone,
             'receiver_remark' => $this->receiver_remark,
             'shipment_type' => $this->shipment_type,
+            'shipment_details' => $this->shipment_details,
             'weight' => $this->weight,
             'dimensions' => $this->dimensions,
             'is_breakable' => $this->is_breakable,
@@ -46,6 +47,7 @@ class OrderResource extends JsonResource
             'schedule_time' => optional($this->schedule_time)->format('Y-m-d H:i:s'),
             'expected_price' => $this->expected_price,
             'final_price' => $this->final_price,
+            'kms_num' => $this->kms_num,
             'created_at' => optional($this->created_at)->toDateTimeString(),
             'updated_at' => optional($this->updated_at)->toDateTimeString(),
         ];
