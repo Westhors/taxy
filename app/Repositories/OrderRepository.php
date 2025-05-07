@@ -59,6 +59,11 @@ class OrderRepository extends CrudRepository implements OrderRepositoryInterface
         });
     }
 
+    public function createOrderRequest(array $data): ?OrderRequest
+    {
+        return OrderRequest::create($data);
+    }
+
     public function acceptOrderRequest(array $data): ?Order
     {
         return DB::transaction(function () use ($data) {
@@ -74,6 +79,21 @@ class OrderRepository extends CrudRepository implements OrderRepositoryInterface
             }
 
             $order->acceptOrder($orderRequest);
+
+            return $order;
+        });
+    }
+
+    public function cancelOrderRequest(array $data): ?Order
+    {
+        return DB::transaction(function () use ($data) {
+            $order = Order::find($data['order_id']);
+
+            if (!$order) {
+                return null;
+            }
+
+            $order->cancelOrder();
 
             return $order;
         });

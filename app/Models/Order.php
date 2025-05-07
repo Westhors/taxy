@@ -81,4 +81,14 @@ class Order extends Model
             'final_price' => $orderRequest->proposed_price,
         ]);
     }
+    public function cancelOrder(): void
+    {
+        if ($this->status === OrderStatus::Pending || $this->status === OrderStatus::Scheduled || $this->status === OrderStatus::Accepted) {
+            $this->update([
+                'status' => OrderStatus::Cancelled->value,
+            ]);
+        } else {
+            throw new \DomainException('Only pending, scheduled or accepted orders can be accepted.');
+        }
+    }
 }

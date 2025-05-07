@@ -44,6 +44,7 @@ return new class extends Migration
             $table->decimal('expected_price', 10, 2)->nullable();
             $table->decimal('kms_num', 10, 2)->nullable();
             $table->decimal('final_price', 10, 2)->nullable();
+            $table->text('cancel_reason')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

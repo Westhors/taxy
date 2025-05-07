@@ -13,7 +13,7 @@ class CreateOrderRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->guard('user')->check();
     }
 
     /**

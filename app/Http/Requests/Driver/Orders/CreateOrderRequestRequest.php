@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Users\Orders;
+namespace App\Http\Requests\Driver\Orders;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CalculatePriceRequest extends FormRequest
+class CreateOrderRequestRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return auth()->guard('user')->check();
+        return auth()->guard('driver')->check();
     }
 
     /**
@@ -22,10 +22,10 @@ class CalculatePriceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'pick_lat' => ['required', 'numeric', 'between:-90,90'],
-            'pick_lng' => ['required', 'numeric', 'between:-180,180'],
-            'drop_lat' => ['required', 'numeric', 'between:-90,90'],
-            'drop_lng' => ['required', 'numeric', 'between:-180,180'],
+            'proposed_price' => 'required|numeric|min:0',
+            'note' => 'nullable|string',
+            'latitude' => 'nullable|string',
+            'longitude' => 'nullable|string',
         ];
     }
 }
