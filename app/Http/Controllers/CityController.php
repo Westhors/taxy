@@ -17,9 +17,9 @@ class CityController extends Controller
 
     protected $cityRepository;
 
-    public function __construct(CityRepositoryInterface $orderRepository)
+    public function __construct(CityRepositoryInterface $cityRepository)
     {
-        $this->cityRepository = $orderRepository;
+        $this->cityRepository = $cityRepository;
     }
 
     public function index()

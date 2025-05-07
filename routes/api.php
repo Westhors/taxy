@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AreaController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\DistrictController;
@@ -79,6 +80,7 @@ Route::prefix('user')->middleware('appthrottle:15')->group(function () {
         Route::post('logout', [UserController::class, 'logout']);
 
         ////? Orders
+        Route::post('expected-price', [AreaController::class, 'calculatePrice']);
         Route::post('create-order', [OrderController::class, 'createOrder']);
         Route::post('accept-order-request', [OrderController::class, 'acceptOrderRequest']);
     });
