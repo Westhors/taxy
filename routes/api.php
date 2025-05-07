@@ -80,7 +80,8 @@ Route::prefix('user')->middleware('appthrottle:15')->group(function () {
         Route::post('logout', [UserController::class, 'logout']);
 
         ////? Orders
-        Route::post('expected-price', [AreaController::class, 'calculatePrice']);
+        // Route::post('expected-price', [AreaController::class, 'calculatePrice']);
+        Route::get('price-per-km', [CountryController::class, 'getPricePerKmByIp']);
         Route::post('create-order', [OrderController::class, 'createOrder']);
         Route::post('accept-order-request', [OrderController::class, 'acceptOrderRequest']);
     });

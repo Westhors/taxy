@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Interfaces\AdminRepositoryInterface;
 use App\Interfaces\AreaRepositoryInterface;
 use App\Interfaces\CityRepositoryInterface;
+use App\Interfaces\CountryRepositoryInterface;
 use App\Interfaces\DistrictRepositoryInterface;
 use App\Interfaces\DriverRepositoryInterface;
 use App\Interfaces\OrderRepositoryInterface;
@@ -13,6 +14,7 @@ use App\Models\District;
 use App\Repositories\AdminRepository;
 use App\Repositories\AreaRepository;
 use App\Repositories\CityRepository;
+use App\Repositories\CountryRepository;
 use App\Repositories\DistrictRepository;
 use App\Repositories\DriverRepository;
 use App\Repositories\OrderRepository;
@@ -33,6 +35,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(CityRepositoryInterface::class, CityRepository::class);
         $this->app->bind(DistrictRepositoryInterface::class, DistrictRepository::class);
         $this->app->bind(AreaRepositoryInterface::class, AreaRepository::class);
+        $this->app->bind(CountryRepositoryInterface::class, CountryRepository::class);
     }
 
     /**
