@@ -4,7 +4,7 @@ namespace App\Http\Requests\Users\Orders;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AcceptOrderRequestRequest extends FormRequest
+class CancelOrderRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,16 +22,18 @@ class AcceptOrderRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order_request_id' => 'required|integer|exists:order_requests,id',
+            'order_id' => 'required|integer|exists:orders,id',
+            'cancel_reason' => 'required|string',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'order_request_id.required' => 'The order request ID is required.',
-            'order_request_id.integer'  => 'The order request ID must be an integer.',
-            'order_request_id.exists'   => 'The selected order request does not exist.',
+            'order_id.required' => 'رقم الطلب مطلوب.',
+            'order_id.integer' => 'رقم الطلب يجب أن يكون رقمًا صحيحًا.',
+            'order_id.exists' => 'الطلب غير موجود.',
+            'cancel_reason.required' => 'سبب الإلغاء مطلوب.',
         ];
     }
 }

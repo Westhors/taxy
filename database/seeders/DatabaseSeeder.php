@@ -13,10 +13,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(CitySeeder::class);
-        $this->call(DistrictSeeder::class);
-        $this->call(AdminSeeder::class);
-        $this->call(DriverSeeder::class);
-        $this->call(UserSeeder::class);
+        $this->call([
+            CitySeeder::class,
+            DistrictSeeder::class,
+            AdminSeeder::class,
+            DriverSeeder::class,
+            UserSeeder::class,
+            AreaSeeder::class,
+            CountrySeeder::class,
+        ]);
     }
 }

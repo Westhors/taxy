@@ -4,7 +4,7 @@ namespace App\Http\Requests\Users\Orders;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AcceptOrderRequestRequest extends FormRequest
+class CalculatePriceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,16 +22,10 @@ class AcceptOrderRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order_request_id' => 'required|integer|exists:order_requests,id',
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'order_request_id.required' => 'The order request ID is required.',
-            'order_request_id.integer'  => 'The order request ID must be an integer.',
-            'order_request_id.exists'   => 'The selected order request does not exist.',
+            'pick_lat' => ['required', 'numeric', 'between:-90,90'],
+            'pick_lng' => ['required', 'numeric', 'between:-180,180'],
+            'drop_lat' => ['required', 'numeric', 'between:-90,90'],
+            'drop_lng' => ['required', 'numeric', 'between:-180,180'],
         ];
     }
 }

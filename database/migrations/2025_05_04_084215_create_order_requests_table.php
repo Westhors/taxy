@@ -22,6 +22,8 @@ return new class extends Migration
             $table->decimal('longitude', 12, 9)->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->unique(['order_id', 'driver_id']);
         });
     }
 

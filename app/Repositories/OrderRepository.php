@@ -59,6 +59,25 @@ class OrderRepository extends CrudRepository implements OrderRepositoryInterface
         });
     }
 
+    public function createOrderRequest(array $data): ?OrderRequest
+    {
+        $existingRequest = OrderRequest::where('order_id', $data['order_id'])
+            ->where('driver_id', $data['driver_id'])
+            ->first();
+
+        if ($existingRequest) {
+            throw new Exception('You have already submitted a request for this order.');
+        }
+
+        $order = Order::find($data['order_id']);
+
+        if ($order->status !== OrderStatus::Pending) {
+            throw new Exception('You can only send a request for a pending or scheduled order.');
+        }
+
+        return OrderRequest::create($data);
+    }
+
     public function acceptOrderRequest(array $data): ?Order
     {
         return DB::transaction(function () use ($data) {
@@ -74,6 +93,21 @@ class OrderRepository extends CrudRepository implements OrderRepositoryInterface
             }
 
             $order->acceptOrder($orderRequest);
+
+            return $order;
+        });
+    }
+
+    public function cancelOrderRequest(array $data): ?Order
+    {
+        return DB::transaction(function () use ($data) {
+            $order = Order::find($data['order_id']);
+
+            if (!$order) {
+                return null;
+            }
+
+            $order->cancelOrder();
 
             return $order;
         });
