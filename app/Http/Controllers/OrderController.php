@@ -97,7 +97,11 @@ class OrderController extends Controller
                 'longitude' => $request->longitude,
             ]);
 
+            // تحميل العلاقات المطلوبة
+            $orderRequest->load(['driver']);
+
             broadcast(new NewOrderOfferRequest($orderRequest))->toOthers();
+
             return $this->success($orderRequest, 'Request sent');
         } catch (Exception $e) {
             return JsonResponse::respondError($e->getMessage());

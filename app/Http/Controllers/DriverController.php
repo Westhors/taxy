@@ -8,6 +8,7 @@ use App\Http\Requests\Driver\Auth\DriverCompleteProfileRequest;
 use App\Http\Requests\Driver\Auth\DriverRequest;
 use App\Http\Requests\Driver\Auth\DriverSetNewPasswordRequest;
 use App\Http\Requests\Driver\Auth\MakePasswordRequest;
+use App\Http\Resources\DriverCarResource;
 use App\Http\Resources\DriverResource;
 use Illuminate\Support\Carbon;
 use App\Interfaces\DriverRepositoryInterface;
@@ -390,19 +391,14 @@ class DriverController extends BaseController
     public function uploadCarDetails(DriverCarRequest $request)
     {
         try {
-            $driver = $this->crudRepository->catDetails($request->validated());
+            $data = $request->validated();
             if (isset($data['photo_car'])) {
-                $data['photo_car'] = storeFile($data['photo_car'], 'photo_car'); // نحذفه
+                $data['photo_car'] = storeFile($data['photo_car'], 'photo_car');
             }
-            return $this->success(new DriverResource($driver), 'Profile completed successfully.');
+            $driver = $this->crudRepository->catDetails($data);
+            return $this->success(new DriverCarResource($driver), 'completed car DETAILS successfully.');
         } catch (Exception $e) {
             return JsonResponse::respondError($e->getMessage());
         }
     }
-
-
 }
-
-
-
-
