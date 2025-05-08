@@ -7,8 +7,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/realtime', function () {
-    return view('test-order-realtime');
+Route::get('/realtime-user', function () {
+    return view('test-order-realtime-user');
+});
+Route::get('/realtime-driver', function () {
+    return view('test-order-realtime-driver');
 });
 
 // Route::post('/broadcasting/auth', function () {
