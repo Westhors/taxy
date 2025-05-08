@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\JsonResponse;
+use App\Http\Requests\Driver\Auth\DriverCarRequest;
 use App\Http\Requests\Driver\Auth\DriverCompleteProfileRequest;
 use App\Http\Requests\Driver\Auth\DriverRequest;
 use App\Http\Requests\Driver\Auth\DriverSetNewPasswordRequest;
@@ -384,4 +385,24 @@ class DriverController extends BaseController
             return JsonResponse::respondError($e->getMessage());
         }
     }
+
+
+    public function uploadCarDetails(DriverCarRequest $request)
+    {
+        try {
+            $driver = $this->crudRepository->catDetails($request->validated());
+            if (isset($data['photo_car'])) {
+                $data['photo_car'] = storeFile($data['photo_car'], 'photo_car'); // نحذفه
+            }
+            return $this->success(new DriverResource($driver), 'Profile completed successfully.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+
 }
+
+
+
+

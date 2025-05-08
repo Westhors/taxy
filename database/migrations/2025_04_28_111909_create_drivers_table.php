@@ -29,6 +29,17 @@ return new class extends Migration
             $table->string('criminal_record')->nullable();
             $table->decimal('latitude', 12, 9)->nullable();
             $table->decimal('longitude', 12, 9)->nullable();
+
+            $table->string('max_power')->nullable();
+            $table->string('fuel')->nullable();
+            $table->string('max_speed')->nullable();
+            $table->string('model')->nullable();
+            $table->string('capacity')->nullable();
+            $table->string('color')->nullable();
+            $table->string('fuel_type')->nullable();
+            $table->string('gear_type')->nullable();
+            $table->string('photo_car')->nullable();
+
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();

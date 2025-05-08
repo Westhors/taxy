@@ -49,10 +49,10 @@ Route::prefix('driver')->middleware('appthrottle:7')->group(function () {
         Route::post('upload-license-front', [DriverController::class, 'uploadLicenseFront']);
         Route::post('upload-license-back', [DriverController::class, 'uploadLicenseBack']);
         Route::post('upload-criminal-record', [DriverController::class, 'uploadCriminalRecord']);
+        Route::post('upload-car-details', [DriverController::class, 'uploadCarDetails']);
         Route::get('check-auth', [DriverController::class, 'checkAuth']);
         Route::post('complete-profile', [DriverController::class, 'completeProfile']);
         Route::post('logout', [DriverController::class, 'logout']);
-
         Route::post('orders/{order}/request', [OrderController::class, 'createOrderDriver']);
     });
 });

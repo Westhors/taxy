@@ -44,4 +44,11 @@ class DriverRepository extends CrudRepository implements DriverRepositoryInterfa
         $driver->update($data);
         return $driver;
     }
+
+    public function catDetails(array $data): Driver
+    {
+        $driver = Auth::guard('driver')->user();
+        $driver->update($data);
+        return $driver;
+    }
 }
