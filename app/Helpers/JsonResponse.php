@@ -29,7 +29,7 @@ class JsonResponse
             'data' => $content,
             'message' => $message,
             'status' => $status
-        ]);
+        ], $status);
     }
 
     public static function respondError($message, int $status = 500): \Illuminate\Http\JsonResponse
@@ -48,7 +48,7 @@ class JsonResponse
             'result' => trans(self::MSG_FAILED),
             'message' => $message,
             'status' => $status,
-        ]);
+        ], $status);
     }
 
 
@@ -82,5 +82,4 @@ class JsonResponse
     {
         return ['result' => trans(self::MSG_SUCCESS), 'message' => trans(self::MSG_UPDATED_SUCCESSFULLY), 'status' => 200];
     }
-    
 }

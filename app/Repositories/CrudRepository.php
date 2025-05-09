@@ -8,6 +8,7 @@ use App\Models\Country;
 use App\Models\Network;
 use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -161,6 +162,16 @@ class CrudRepository implements ICrudRepository
     public function find($id)
     {
         return $this->model->findOrFail($id);
+    }
+
+    public function findOrError($id)
+    {
+        $item = $this->model->find($id);
+        if ($item) {
+            return $item;
+        }
+        $modelName = class_basename($this->model);
+        throw new Exception($modelName . ' not found', 404);
     }
 
     // remove record from the database

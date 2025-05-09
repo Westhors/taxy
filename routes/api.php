@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\CityController;
@@ -79,6 +80,11 @@ Route::prefix('user')->middleware('appthrottle:15')->group(function () {
         Route::get('check-auth', [UserController::class, 'checkAuth']);
         Route::post('complete-profile', [UserController::class, 'completeProfile']);
         Route::post('logout', [UserController::class, 'logout']);
+        ////? Addresses
+        Route::get('my-addresses', [AddressController::class, 'myAddresses']);
+        Route::post('create-new-address', [AddressController::class, 'store']);
+        Route::post('update-address/{id}', [AddressController::class, 'update']);
+        Route::post('delete-address/{id}', [AddressController::class, 'destroy']);
 
         ////? Orders
         // Route::post('expected-price', [AreaController::class, 'calculatePrice']);

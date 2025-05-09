@@ -24,6 +24,8 @@ interface ICrudRepository
 
     public function find($id);
 
+    public function findOrError($id);
+
     public function restore($model);
 
     public function delete($id);
@@ -33,5 +35,4 @@ interface ICrudRepository
     public function deleteRecords($tableName, $ids, $relationsToNeglect = []);
 
     public function restoreItem($tableName, $ids, $relationsToNeglect = []);
-
 }

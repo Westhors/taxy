@@ -97,7 +97,6 @@ class OrderController extends Controller
                 'longitude' => $request->longitude,
             ]);
 
-            // تحميل العلاقات المطلوبة
             $orderRequest->load(['driver']);
 
             broadcast(new NewOrderOfferRequest($orderRequest))->toOthers();
