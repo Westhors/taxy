@@ -125,4 +125,12 @@ class OrderRepository extends CrudRepository implements OrderRepositoryInterface
             }
         }
     }
+
+    public function getUserOrdersByStatuses(int $userId, array $statuses)
+    {
+        return $this->model
+            ->where('user_id', $userId)
+            ->whereIn('status', $statuses)
+            ->latest();
+    }
 }

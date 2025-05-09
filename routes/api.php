@@ -90,6 +90,7 @@ Route::prefix('user')->middleware('appthrottle:15')->group(function () {
         // Route::post('expected-price', [AreaController::class, 'calculatePrice']);
         Route::get('order-details/{order_id}', [OrderController::class, 'show']);
         Route::get('price-per-km', [CountryController::class, 'getPricePerKmByIp']);
+        Route::get('history-orders', [OrderController::class, 'historyOrders']);
         Route::post('create-order', [OrderController::class, 'createOrder']);
         Route::post('accept-order-request', [OrderController::class, 'acceptOrderRequest']);
         Route::post('cancel-order', [OrderController::class, 'cancelOrder']);

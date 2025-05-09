@@ -23,6 +23,28 @@ enum OrderStatus: string
         return array_column(self::cases(), 'value');
     }
 
+    public static function categories(): array
+    {
+        return [
+            'upcoming' => [
+                self::Scheduled->value,
+                self::Accepted->value,
+                self::PickedUp->value,
+                self::InTransit->value,
+            ],
+            'completed' => [
+                self::Delivered->value,
+                self::Completed->value,
+            ],
+            'failed' => [
+                self::Cancelled->value,
+                self::Failed->value,
+                self::Returned->value,
+            ],
+            'all' => self::values(),
+        ];
+    }
+
     /**
      * Get English label for each status.
      */

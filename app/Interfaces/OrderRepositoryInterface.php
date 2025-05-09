@@ -13,4 +13,5 @@ interface OrderRepositoryInterface extends ICrudRepository
     public function acceptOrderRequest(array $data): ?Order;
     public function cancelOrderRequest(array $data): ?Order;
     public function sendOrderToNearBy(Order $order, $pick_lat = null, $pick_lng = null): void;
+    public function getUserOrdersByStatuses(int $userId, array $statuses);
 }

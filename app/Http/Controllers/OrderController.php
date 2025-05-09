@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OrderStatus;
 use App\Events\NewOrderOfferRequest;
 use App\Events\NewOrderRequest;
 use App\Http\Requests\Users\Orders\CreateOrderRequest;
@@ -102,6 +103,28 @@ class OrderController extends Controller
             broadcast(new NewOrderOfferRequest($orderRequest))->toOthers();
 
             return $this->success($orderRequest, 'Request sent');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    public function historyOrders(Request $request)
+    {
+        $validated = $request->validate([
+            'status' => 'nullable|in:all,upcoming,completed,failed',
+        ]);
+        try {
+            $category = $validated['status'] ?? 'all';
+
+            $statuses = OrderStatus::categories()[$category] ?? [];
+
+            $userId = auth()->guard('user')->id();
+
+            $orders = $this->orderRepository
+                ->getUserOrdersByStatuses($userId, $statuses)
+                ->paginate(10);
+
+            return $this->success(OrderResource::collection($orders));
         } catch (Exception $e) {
             return JsonResponse::respondError($e->getMessage());
         }
