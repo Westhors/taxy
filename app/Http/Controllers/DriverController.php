@@ -7,6 +7,7 @@ use App\Http\Requests\Driver\Auth\DriverCarRequest;
 use App\Http\Requests\Driver\Auth\DriverCompleteProfileRequest;
 use App\Http\Requests\Driver\Auth\DriverRequest;
 use App\Http\Requests\Driver\Auth\DriverSetNewPasswordRequest;
+use App\Http\Requests\Driver\Auth\DriverUpdateProfileRequest;
 use App\Http\Requests\Driver\Auth\MakePasswordRequest;
 use App\Http\Resources\DriverCarResource;
 use App\Http\Resources\DriverResource;
@@ -21,6 +22,7 @@ use App\Notifications\VerifyBusinessEmail;
 use Illuminate\Support\Facades\Notification;
 use App\Traits\HttpResponses;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class DriverController extends BaseController
 {
@@ -180,6 +182,7 @@ class DriverController extends BaseController
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
+                'gender' => $request->gender,
             ]);
             return $this->success(new DriverResource($driver), 'driver registered successfully');
         } catch (Exception $e) {
@@ -250,18 +253,28 @@ class DriverController extends BaseController
     }
 
 
-    public function completeProfile(DriverCompleteProfileRequest $request)
-    {
-        try {
-            $driver = $this->crudRepository->completeProfile($request->validated());
-            if (isset($data['avatar'])) {
-                $data['avatar'] = storeFile($data['avatar'], 'avatars'); // نحذفه
-            }
-            return $this->success(new DriverResource($driver), 'Profile completed successfully.');
-        } catch (Exception $e) {
-            return JsonResponse::respondError($e->getMessage());
+
+
+
+
+public function completeProfile(DriverCompleteProfileRequest $request)
+{
+    try {
+        $data = $request->validated();
+        if (isset($data['avatar'])) {
+            $data['avatar'] = storeFile($data['avatar'], 'avatar');
         }
+        $driver = $this->crudRepository->completeProfile($data);
+        return $this->success(new DriverResource($driver), 'completed car DETAILS successfully.');
+    } catch (Exception $e) {
+        return JsonResponse::respondError($e->getMessage());
     }
+}
+
+
+
+
+
 
     public function checkAuth(Request $request)
     {
@@ -401,4 +414,19 @@ class DriverController extends BaseController
             return JsonResponse::respondError($e->getMessage());
         }
     }
+
+    public function updateProfile(DriverUpdateProfileRequest $request)
+    {
+        try {
+            $driver = $this->crudRepository->completeProfile($request->validated());
+            if (isset($data['avatar'])) {
+                $data['avatar'] = storeFile($data['avatar'], 'avatars'); // نحذفه
+            }
+            return $this->success(new DriverResource($driver), 'Profile completed successfully.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+
 }

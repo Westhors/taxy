@@ -12,7 +12,7 @@ class DriverRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; 
+        return true;
     }
 
     public function rules(): array
@@ -21,6 +21,7 @@ class DriverRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:drivers,email',
             'phone' => 'nullable|string|max:20',
+            'gender' => 'required|in:male,female,other',
         ];
     }
 }

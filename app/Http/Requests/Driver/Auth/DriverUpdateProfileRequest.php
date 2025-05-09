@@ -5,7 +5,7 @@ namespace App\Http\Requests\Driver\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
-class DriverCompleteProfileRequest extends FormRequest
+class DriverUpdateProfileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -18,11 +18,11 @@ class DriverCompleteProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|phone|unique:drivers,phone,' . $this->user()->id,
-            'avatar' => 'nullable|image',
-            'city_id' => 'required|exists:cities,id',
-            'district_id' => 'required|exists:districts,id',
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|string|max:255',
+            'gender' => 'nullable||in:male,female,other',
+            'phone' => 'nullable|string|phone|unique:drivers,phone,' . $this->user()->id,
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ];
     }
 }

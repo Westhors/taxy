@@ -54,6 +54,7 @@ Route::prefix('driver')->middleware('appthrottle:7')->group(function () {
         Route::get('check-auth', [DriverController::class, 'checkAuth']);
         Route::post('complete-profile', [DriverController::class, 'completeProfile']);
         Route::post('logout', [DriverController::class, 'logout']);
+        Route::post('update-profile', [DriverController::class, 'updateProfile']);
         Route::post('orders/{order}/request', [OrderController::class, 'createOrderDriver']);
     });
 });
