@@ -9,6 +9,7 @@ use App\Interfaces\CountryRepositoryInterface;
 use App\Interfaces\DistrictRepositoryInterface;
 use App\Interfaces\DriverRepositoryInterface;
 use App\Interfaces\OrderRepositoryInterface;
+use App\Interfaces\TicketRepositoryInterface;
 use App\Interfaces\UserRepositoryInterface;
 use App\Models\District;
 use App\Repositories\AdminRepository;
@@ -18,6 +19,7 @@ use App\Repositories\CountryRepository;
 use App\Repositories\DistrictRepository;
 use App\Repositories\DriverRepository;
 use App\Repositories\OrderRepository;
+use App\Repositories\TicketRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -36,6 +38,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(DistrictRepositoryInterface::class, DistrictRepository::class);
         $this->app->bind(AreaRepositoryInterface::class, AreaRepository::class);
         $this->app->bind(CountryRepositoryInterface::class, CountryRepository::class);
+        $this->app->bind(TicketRepositoryInterface::class, TicketRepository::class);
     }
 
     /**

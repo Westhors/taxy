@@ -8,6 +8,7 @@ use App\Http\Controllers\CountryController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
 use App\Models\District;
 use Illuminate\Http\Request;
@@ -94,6 +95,9 @@ Route::prefix('user')->middleware('appthrottle:15')->group(function () {
         Route::post('create-order', [OrderController::class, 'createOrder']);
         Route::post('accept-order-request', [OrderController::class, 'acceptOrderRequest']);
         Route::post('cancel-order', [OrderController::class, 'cancelOrder']);
+
+        ////? Tickets
+        Route::post('send-ticket', [TicketController::class, 'store']);
     });
 });
 ////////////////////////////////////////// users ////////////////////////////////
