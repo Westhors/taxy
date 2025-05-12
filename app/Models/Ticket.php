@@ -13,6 +13,7 @@ class Ticket extends Model
         'user_id',
         'name',
         'phone',
+        'email',
         'message',
     ];
 

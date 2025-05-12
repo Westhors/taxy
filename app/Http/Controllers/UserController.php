@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\JsonResponse;
+use App\Http\Requests\Users\Auth\ChangePasswordRequest;
 use App\Http\Requests\Users\Auth\CheckEmailOrPhoneRequest;
 use App\Http\Requests\Users\Auth\CompleteProfileRequest;
 use App\Http\Requests\Users\Auth\LoginRequest;
@@ -11,6 +12,7 @@ use App\Http\Requests\Users\Auth\SendEmailOTPRequest;
 use App\Http\Requests\Users\Auth\SendPhoneOTPRequest;
 use App\Http\Requests\Users\Auth\SetNewPasswordRequest;
 use App\Http\Requests\Users\Auth\SetPasswordRequest;
+use App\Http\Requests\Users\Auth\UpdateProfileRequest;
 use App\Http\Requests\Users\Auth\VerifyEmailOTPRequest;
 use App\Http\Requests\Users\Auth\VerifyOTPEmailOrPhoneRequest;
 use App\Http\Requests\Users\Auth\VerifyPhoneOTPRequest;
@@ -20,6 +22,7 @@ use App\Traits\HttpResponses;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends  BaseController
 {
@@ -216,8 +219,54 @@ class UserController extends  BaseController
             }
 
             // Update password
-            $this->userRepository->updatePassword($user, $request->email_or_phone, $request->new_password);
+            $this->userRepository->setNewPassword($user, $request->email_or_phone, $request->new_password);
             return $this->success(null, 'Password updated successfully');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+    public function updateProfile(UpdateProfileRequest $request)
+    {
+        $user = Auth::guard('user')->user();
+
+        $updatedUser = $this->userRepository->updateProfile($user, $request->validated());
+
+        return $this->success(new UserResource($updatedUser->load(['city', 'district'])), 'Profile updated successfully');
+    }
+
+
+    public function changePassword(ChangePasswordRequest $request)
+    {
+        try {
+            $user = Auth::guard('user')->user();
+
+            if (!Hash::check($request->current_password, $user->password)) {
+                return $this->error(null, 'Current password is incorrect', 422);
+            }
+
+            $this->userRepository->changePassword($user, $request->new_password);
+
+            return $this->success(null,  'Password changed successfully');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
+
+    public function deleteAccount(Request $request)
+    {
+        try {
+            /** @var \App\Models\User $user **/
+            $user = Auth::guard('user')->user();
+
+            if (!$user) {
+                return $this->error(null, 'User not authenticated', 401);
+            }
+
+            $user->delete();
+
+            return $this->success(null, 'Account deleted successfully.');
         } catch (Exception $e) {
             return JsonResponse::respondError($e->getMessage());
         }

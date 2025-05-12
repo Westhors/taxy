@@ -8,6 +8,7 @@ use App\Http\Controllers\CountryController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
 use App\Models\District;
@@ -81,6 +82,9 @@ Route::prefix('user')->middleware('appthrottle:15')->group(function () {
         Route::get('check-auth', [UserController::class, 'checkAuth']);
         Route::post('complete-profile', [UserController::class, 'completeProfile']);
         Route::post('logout', [UserController::class, 'logout']);
+        Route::post('update-profile', [UserController::class, 'updateProfile']);
+        Route::post('change-password', [UserController::class, 'changePassword']);
+        Route::post('delete-account', [UserController::class, 'deleteAccount']);
         ////? Addresses
         Route::get('my-addresses', [AddressController::class, 'myAddresses']);
         Route::post('create-new-address', [AddressController::class, 'store']);
@@ -107,5 +111,6 @@ Route::prefix('user')->middleware('appthrottle:15')->group(function () {
 Route::middleware('appthrottle:15')->group(function () {
     Route::get('cities', [CityController::class, 'index']);
     Route::get('districts', [DistrictController::class, 'index']);
+    Route::get('/pages/{slug}', [PageController::class, 'show']);
 });
 ////////////////////////////////////////// general ////////////////////////////////

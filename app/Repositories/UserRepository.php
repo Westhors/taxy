@@ -13,6 +13,7 @@ use App\Mail\VerifyOtpMail;
 use App\Models\UserOtp;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserRepository extends CrudRepository implements UserRepositoryInterface
 {
@@ -35,9 +36,10 @@ class UserRepository extends CrudRepository implements UserRepositoryInterface
 
     public function login(string $emailOrPhone, string $password): ?User
     {
-        $user = User::where('email', $emailOrPhone)
-            ->orWhere('phone', $emailOrPhone)
-            ->first();
+        $user = User::where(function ($query) use ($emailOrPhone) {
+            $query->where('email', $emailOrPhone)
+                ->orWhere('phone', $emailOrPhone);
+        })->first();
 
         if ($user && Hash::check($password, $user->password)) {
             return $user;
@@ -159,9 +161,9 @@ class UserRepository extends CrudRepository implements UserRepositoryInterface
         $user = Auth::guard('user')->user();
 
         if ($user) {
+            // $user->currentAccessToken()->delete();
             $user->tokens()->delete();
 
-            $user->currentAccessToken()->delete();
 
             return true;
         }
@@ -197,7 +199,7 @@ class UserRepository extends CrudRepository implements UserRepositoryInterface
             ->exists();
     }
 
-    public function updatePassword(User $user, string $emailOrPhone, string $newPassword): bool
+    public function setNewPassword(User $user, string $emailOrPhone, string $newPassword): bool
     {
         $user->forceFill([
             'password' => Hash::make($newPassword),
@@ -207,6 +209,32 @@ class UserRepository extends CrudRepository implements UserRepositoryInterface
 
         UserOtp::where($field, $emailOrPhone)->delete();
 
+        return true;
+    }
+
+    public function updateProfile(User $user, array $data): User
+    {
+        $data = array_filter($data, function ($value) {
+            return !is_null($value) && $value !== '';
+        });
+
+        if (isset($data['avatar'])) {
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            $data['avatar'] = storeFile($data['avatar'], 'avatars');
+        }
+
+        $user->update($data);
+        return $user;
+    }
+
+
+    public function changePassword(User $user, string $newPassword): bool
+    {
+        $user->password = Hash::make($newPassword);
+        $user->save();
         return true;
     }
 }

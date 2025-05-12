@@ -31,5 +31,9 @@ interface UserRepositoryInterface extends ICrudRepository
 
     public function verifyEmailOrPhoneOtp(string $emailOrPhone, string $otp): bool;
 
-    public function updatePassword(User $user, string $emailOrPhone, string $newPassword): bool;
+    public function setNewPassword(User $user, string $emailOrPhone, string $newPassword): bool;
+
+    public function updateProfile(User $user, array $data): User;
+
+    public function changePassword(User $user, string $newPassword): bool;
 }

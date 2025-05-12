@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             AreaSeeder::class,
             CountrySeeder::class,
             AddressSeeder::class,
+            PageSeeder::class,
         ]);
     }
 }
