@@ -317,6 +317,9 @@ class DriverController extends BaseController
     {
         try {
             $driver = Driver::where('email', $request->email)->first();
+            if (!$driver) {
+                return $this->error(null, 'Driver not found with this email address.', 404);
+            }
             $verificationCode = mt_rand(100000, 999999);
             $expiryTime = Carbon::now()->addHours(2);
             $driver->update([
@@ -458,5 +461,4 @@ class DriverController extends BaseController
             return JsonResponse::respondError($e->getMessage());
         }
     }
-
 }
