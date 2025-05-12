@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('criminal_record')->nullable();
             $table->decimal('latitude', 12, 9)->nullable();
             $table->decimal('longitude', 12, 9)->nullable();
+            $table->string('fcm_token')->nullable();
 
             $table->string('max_power')->nullable();
             $table->string('fuel')->nullable();

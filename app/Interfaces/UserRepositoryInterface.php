@@ -11,6 +11,8 @@ interface UserRepositoryInterface extends ICrudRepository
 
     public function login(string $emailOrPhone, string $password): ?User;
 
+    public function updateFCMToken(User $user, ?string $fcm_token): bool;
+
     public function generateEmailOtp(string $email): string;
 
     public function verifyEmailOtp(string $email, string $otp): bool;

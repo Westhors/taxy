@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\JsonResponse;
+use App\Http\Requests\Users\Auth\AutoLoginRequest;
 use App\Http\Requests\Users\Auth\ChangePasswordRequest;
 use App\Http\Requests\Users\Auth\CheckEmailOrPhoneRequest;
 use App\Http\Requests\Users\Auth\CompleteProfileRequest;
@@ -51,6 +52,7 @@ class UserController extends  BaseController
     {
         try {
             $user = $this->userRepository->login($request->email_or_phone, $request->password);
+            $this->userRepository->updateFCMToken($user, $request->fcm_token);
 
             if ($user) {
                 $token = $user->createToken('user-api-token', ['user'])->plainTextToken;
@@ -145,16 +147,22 @@ class UserController extends  BaseController
         try {
             $user = $this->userRepository->completeProfile($request->validated());
 
+            $this->userRepository->updateFCMToken($user, $request->fcm_token);
+
             return $this->success(new UserResource($user), 'Profile completed successfully.');
         } catch (Exception $e) {
             return JsonResponse::respondError($e->getMessage());
         }
     }
 
-    public function checkAuth(Request $request)
+    public function checkAuth(AutoLoginRequest $request)
     {
         if (Auth::check()) {
-            return $this->success(new UserResource(Auth::guard('user')->user()), 'User logged in successfully');
+            $user = Auth::guard('user')->user();
+
+            $this->userRepository->updateFCMToken($user, $request->fcm_token);
+
+            return $this->success(new UserResource($user), 'User logged in successfully');
         } else {
             return $this->error(null, 'User is not authenticated');
         }

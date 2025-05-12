@@ -47,6 +47,17 @@ class UserRepository extends CrudRepository implements UserRepositoryInterface
         return null;
     }
 
+    public function updateFCMToken(User $user, ?string $fcm_token): bool
+    {
+        if ($fcm_token) {
+            $user->fcm_token = $fcm_token;
+            $user->save();
+            return true;
+        }
+        return false;
+    }
+
+
     // Generate OTP and send to email
     public function generateEmailOtp(string $email): string
     {

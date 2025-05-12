@@ -24,6 +24,7 @@ return new class extends Migration
             $table->timestamp('first_login_at')->nullable();
             $table->decimal('latitude', 12, 9)->nullable();
             $table->decimal('longitude', 12, 9)->nullable();
+            $table->string('fcm_token')->nullable();
 
             $table->foreignId('city_id')->nullable()->constrained('cities')->cascadeOnDelete();
             $table->foreignId('district_id')->nullable()->constrained('districts')->cascadeOnDelete();

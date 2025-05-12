@@ -7,12 +7,15 @@ use App\Http\Requests\AdminRequest;
 use App\Http\Resources\AdminResource;
 use App\Interfaces\AdminRepositoryInterface;
 use App\Models\Admin;
+use App\Traits\HttpResponses;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends BaseController
 {
+    use HttpResponses;
+
     protected mixed $crudRepository;
 
     public function __construct(AdminRepositoryInterface $pattern)
@@ -118,8 +121,8 @@ class AdminController extends BaseController
             if (Hash::check($credentials['password'], $admin->password)) {
                 activity()->performedOn($admin)->withProperties(['attributes' => $admin])->log('login');
                 $token = $admin->createToken('admin-token')->plainTextToken;
-                return response()->json([
-                    'data' => new AdminResource($admin),
+                return $this->success([
+                    'admin' => new AdminResource($admin),
                     'token' => $token,
                 ]);
             }

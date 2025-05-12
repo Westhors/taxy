@@ -7,6 +7,7 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\TicketController;
@@ -21,18 +22,23 @@ Route::get('/user', function (Request $request) {
 
 ////////////////////////////////////////// Admin ////////////////////////////////
 
-Route::group(['middleware' => ['auth:sanctum']], static fn(): array => [
-    Route::post('/admin/index', [AdminController::class, 'index']),
-    Route::post('admin/restore', [AdminController::class, 'restore']),
-    Route::delete('admin/delete', [AdminController::class, 'destroy']),
-    Route::delete('admin/force-delete', [AdminController::class, 'forceDelete']),
-    Route::put('/admin/{id}/{column}', [AdminController::class, 'toggle']),
-    Route::post('/admin/logout', [AdminController::class, 'logout']),
-    Route::get('/admin/details', [AdminController::class, 'getCurrentAdmin']),
-    Route::apiResource('admin', AdminController::class),
-]);
+Route::prefix('admin')->middleware('appthrottle:7')->group(function () {
+    Route::group(['middleware' => ['auth:admin']], static fn(): array => [
+        Route::post('index', [AdminController::class, 'index']),
+        Route::post('restore', [AdminController::class, 'restore']),
+        Route::delete('delete', [AdminController::class, 'destroy']),
+        Route::delete('force-delete', [AdminController::class, 'forceDelete']),
+        Route::put('{id}/{column}', [AdminController::class, 'toggle']),
+        Route::post('logout', [AdminController::class, 'logout']),
+        Route::get('details', [AdminController::class, 'getCurrentAdmin']),
+        Route::apiResource('admin', AdminController::class),
 
-Route::post('/admin/login', [AdminController::class, 'login']);
+        ////? Notifications
+        Route::post('send-notification', [NotificationController::class, 'store']),
+    ]);
+
+    Route::post('login', [AdminController::class, 'login']);
+});
 
 ////////////////////////////////////////// Admin ////////////////////////////////
 
@@ -59,6 +65,9 @@ Route::prefix('driver')->middleware('appthrottle:7')->group(function () {
         Route::post('logout', [DriverController::class, 'logout']);
         Route::post('update-profile', [DriverController::class, 'updateProfile']);
         Route::post('orders/{order}/request', [OrderController::class, 'createOrderDriver']);
+
+        ////? Notifications
+        Route::get('my-notifications', [NotificationController::class, 'getMyNotifications']);
     });
 });
 ////////////////////////////////////////// driver ////////////////////////////////
@@ -79,7 +88,7 @@ Route::prefix('user')->middleware('appthrottle:15')->group(function () {
     Route::post('set-new-password', [UserController::class, 'setNewPassword']);
 
     Route::middleware(['auth:user'])->group(function () {
-        Route::get('check-auth', [UserController::class, 'checkAuth']);
+        Route::post('check-auth', [UserController::class, 'checkAuth']);
         Route::post('complete-profile', [UserController::class, 'completeProfile']);
         Route::post('logout', [UserController::class, 'logout']);
         Route::post('update-profile', [UserController::class, 'updateProfile']);
@@ -102,6 +111,9 @@ Route::prefix('user')->middleware('appthrottle:15')->group(function () {
 
         ////? Tickets
         Route::post('send-ticket', [TicketController::class, 'store']);
+
+        ////? Notifications
+        Route::get('my-notifications', [NotificationController::class, 'getMyNotifications']);
     });
 });
 ////////////////////////////////////////// users ////////////////////////////////
