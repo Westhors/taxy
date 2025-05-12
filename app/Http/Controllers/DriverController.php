@@ -448,7 +448,7 @@ class DriverController extends BaseController
     public function deleteAccount(Request $request)
     {
         try {
-            $driver = auth('driver')->user(); 
+            $driver = auth('driver')->user();
             if (!$driver) {
                 return $this->error(null, 'Unauthorized.', 401);
             }
@@ -458,4 +458,5 @@ class DriverController extends BaseController
             return JsonResponse::respondError($e->getMessage());
         }
     }
+
 }

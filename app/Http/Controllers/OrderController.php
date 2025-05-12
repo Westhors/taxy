@@ -143,4 +143,26 @@ class OrderController extends Controller
             return JsonResponse::respondError($e->getMessage());
         }
     }
+
+    public function startDelivery($id)
+    {
+        $driver = auth('driver')->user();
+
+        $order = Order::where('id', $id)
+            ->where('driver_id', $driver->id)
+            ->first();
+
+            if (!$order) {
+                return $this->error(null, 'Unauthorized.', 401);
+            }
+
+        if ($order->status->value !== 'accepted') {
+            return $this->error(null, 'Order status must be accepted before starting delivery.', 400);
+        }
+
+        $order->status = 'in_transit';
+        $order->save();
+
+        return $this->success($order, 'Delivery has been started successfully.');
+    }
 }
