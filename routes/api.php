@@ -84,6 +84,9 @@ Route::prefix('driver')->middleware('appthrottle:7')->group(function () {
 
         Route::delete('delete-account', [DriverController::class, 'deleteAccount']);
 
+        Route::post('orders/{id}/in-transit', [OrderController::class, 'startDelivery']);
+
+
     });
 });
 ////////////////////////////////////////// driver ////////////////////////////////
