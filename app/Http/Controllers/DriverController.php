@@ -9,6 +9,7 @@ use App\Http\Requests\Driver\Auth\DriverRequest;
 use App\Http\Requests\Driver\Auth\DriverSetNewPasswordRequest;
 use App\Http\Requests\Driver\Auth\DriverUpdateProfileRequest;
 use App\Http\Requests\Driver\Auth\MakePasswordRequest;
+use App\Http\Requests\Users\Auth\ChangePasswordRequest;
 use App\Http\Resources\DriverCarResource;
 use App\Http\Resources\DriverResource;
 use Illuminate\Support\Carbon;
@@ -253,23 +254,39 @@ class DriverController extends BaseController
     }
 
 
+    public function changePassword(ChangePasswordRequest $request)
+    {
+        try {
+            $driver = $request->user();
 
+            if (! Hash::check($request->current_password, $driver->password)) {
+                return $this->error(null, 'Current password is incorrect', 422);
+            }
 
-
-
-public function completeProfile(DriverCompleteProfileRequest $request)
-{
-    try {
-        $data = $request->validated();
-        if (isset($data['avatar'])) {
-            $data['avatar'] = storeFile($data['avatar'], 'avatar');
+            $driver->update([
+                'password' => Hash::make($request->new_password),
+            ]);
+            return $this->success(null,  'Password changed successfully');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
         }
-        $driver = $this->crudRepository->completeProfile($data);
-        return $this->success(new DriverResource($driver), 'completed car DETAILS successfully.');
-    } catch (Exception $e) {
-        return JsonResponse::respondError($e->getMessage());
     }
-}
+
+
+
+    public function completeProfile(DriverCompleteProfileRequest $request)
+    {
+        try {
+            $data = $request->validated();
+            if (isset($data['avatar'])) {
+                $data['avatar'] = storeFile($data['avatar'], 'avatar');
+            }
+            $driver = $this->crudRepository->completeProfile($data);
+            return $this->success(new DriverResource($driver), 'completed car DETAILS successfully.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
 
 
 
@@ -428,5 +445,17 @@ public function completeProfile(DriverCompleteProfileRequest $request)
         }
     }
 
-
+    public function deleteAccount(Request $request)
+    {
+        try {
+            $driver = auth('driver')->user(); 
+            if (!$driver) {
+                return $this->error(null, 'Unauthorized.', 401);
+            }
+            $driver->delete();
+            return $this->success(null, 'Account has been deleted successfully.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
 }
