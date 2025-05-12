@@ -71,6 +71,20 @@ class OrderController extends Controller
         }
     }
 
+
+    public function history(Request $request)
+    {
+        try {
+            $driver = $request->user();
+
+            $orders = $driver->orders()->get();
+
+            return $this->success(OrderResource::collection($orders));
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
+    }
+
     public function cancelOrder(CancelOrderRequest $request)
     {
         try {

@@ -47,7 +47,10 @@ class Driver extends Authenticatable
         }
         return $builder;
     }
-
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
     public function scopeNearby($query, $lat, $lng, $distance = 10)
     {
         return $query->selectRaw("*, (

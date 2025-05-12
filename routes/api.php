@@ -4,6 +4,7 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DriverController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\TicketDriverController;
 use App\Http\Controllers\UserController;
 use App\Models\District;
 use Illuminate\Http\Request;
@@ -56,15 +58,37 @@ Route::prefix('driver')->middleware('appthrottle:7')->group(function () {
 
 
     Route::middleware(['auth:driver'])->group(function () {
+        Route::post('/contact-us', [ContactUsController::class, 'store']);
+
+        Route::post('change-password', [DriverController::class, 'changePassword']);
+        //upload
         Route::post('upload-license-front', [DriverController::class, 'uploadLicenseFront']);
         Route::post('upload-license-back', [DriverController::class, 'uploadLicenseBack']);
         Route::post('upload-criminal-record', [DriverController::class, 'uploadCriminalRecord']);
         Route::post('upload-car-details', [DriverController::class, 'uploadCarDetails']);
+
+        //auth
         Route::get('check-auth', [DriverController::class, 'checkAuth']);
+
+        //complete profile
         Route::post('complete-profile', [DriverController::class, 'completeProfile']);
+
+        //    logout
         Route::post('logout', [DriverController::class, 'logout']);
+
+        //    update-profile
         Route::post('update-profile', [DriverController::class, 'updateProfile']);
+
+        //    request Order
         Route::post('orders/{order}/request', [OrderController::class, 'createOrderDriver']);
+
+        //    massage
+        Route::post('send-ticket', [TicketDriverController::class, 'store']);
+
+        //    history
+        Route::get('orders/history', [OrderController::class, 'historyDriverOrders']);
+
+        Route::delete('delete-account', [DriverController::class, 'deleteAccount']);
 
         ////? Notifications
         Route::get('my-notifications', [NotificationController::class, 'getMyNotifications']);
