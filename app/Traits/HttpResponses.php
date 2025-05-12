@@ -24,4 +24,14 @@ trait HttpResponses
             'data' => $data,
         ], $code);
     }
+
+    protected function notFound($message = null, $code = 404): JsonResponse
+    {
+        return response()->json([
+            'status' => 'error',
+            'success' => false,
+            'message' => $message ?? 'Item not found',
+            'data' => null,
+        ], $code);
+    }
 }
