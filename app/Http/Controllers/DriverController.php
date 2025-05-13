@@ -206,7 +206,7 @@ class DriverController extends BaseController
                 Notification::send($driver, new VerifyBusinessEmail($verificationCode));
                 return $this->success(null, 'OTP sent to email. This code is valid for 2 hours.');
             } else {
-                return $this->error('Your email is already verified. If you forgot your password, please use the reset password option or contact support.', 403);
+                return $this->error(null,'Your email is already verified. If you forgot your password, please use the reset password option or contact support.', 403);
             }
         } catch (Exception $e) {
             return JsonResponse::respondError($e->getMessage());
@@ -218,10 +218,10 @@ class DriverController extends BaseController
         try {
             $driver = Driver::where('email', $request->email)->first();
             if ($driver->code_verify != $request->code) {
-                return $this->error('Invalid verification code', 400);
+                return $this->error(null,'Invalid verification code', 400);
             }
             if (Carbon::now()->diffInHours($driver->expiry_time_code_verify) >= 2) {
-                return $this->error('Verification code expired', 400);
+                return $this->error(null,'Verification code expired', 400);
             }
             $driver->update([
                 'code_verify' => null,
@@ -247,7 +247,7 @@ class DriverController extends BaseController
                     'token' => $token,
                 ], 'Password set successfully.');
             }
-            return $this->error("Password can't set", 422);
+            return $this->error(null,"Password can't set", 422);
         } catch (Exception $e) {
             return JsonResponse::respondError($e->getMessage());
         }
