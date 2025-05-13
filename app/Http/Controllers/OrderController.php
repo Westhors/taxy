@@ -146,23 +146,54 @@ class OrderController extends Controller
 
     public function startDelivery($id)
     {
-        $driver = auth('driver')->user();
+        try {
+            $driver = auth('driver')->user();
 
-        $order = Order::where('id', $id)
-            ->where('driver_id', $driver->id)
-            ->first();
+            $order = Order::where('id', $id)
+                ->where('driver_id', $driver->id)
+                ->first();
 
             if (!$order) {
                 return $this->error(null, 'Unauthorized.', 401);
             }
 
-        if ($order->status->value !== 'accepted') {
-            return $this->error(null, 'Order status must be accepted before starting delivery.', 400);
+            if ($order->status->value !== 'accepted') {
+                return $this->error(null, 'Order status must be accepted before starting delivery.', 400);
+            }
+
+            $order->status = 'in_transit';
+            $order->save();
+
+            return $this->success($order, 'Delivery has been started successfully.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
         }
+    }
 
-        $order->status = 'in_transit';
-        $order->save();
 
-        return $this->success($order, 'Delivery has been started successfully.');
+        public function finishDelivery($id)
+    {
+        try {
+            $driver = auth('driver')->user();
+
+            $order = Order::where('id', $id)
+                ->where('driver_id', $driver->id)
+                ->first();
+
+            if (!$order) {
+                return $this->error(null, 'Unauthorized.', 401);
+            }
+
+            if ($order->status->value !== 'in_transit') {
+                return $this->error(null, 'Order status must be in transit before finishing delivery.', 400);
+            }
+
+            $order->status = 'completed';
+            $order->save();
+
+            return $this->success($order, 'Delivery has been started successfully.');
+        } catch (Exception $e) {
+            return JsonResponse::respondError($e->getMessage());
+        }
     }
 }

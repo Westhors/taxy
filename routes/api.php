@@ -92,6 +92,8 @@ Route::prefix('driver')->middleware('appthrottle:7')->group(function () {
 
         Route::post('orders/{id}/in-transit', [OrderController::class, 'startDelivery']);
 
+        Route::post('orders/{id}/completed', [OrderController::class, 'finishDelivery']);
+
         ////? Notifications
         Route::get('my-notifications', [NotificationController::class, 'getMyNotifications']);
     });
